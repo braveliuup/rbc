@@ -127,6 +127,7 @@ $err = new ecs_error('message.htm');
 /* 初始化session */
 require(ROOT_PATH . 'includes/cls_session.php');
 $sess = new cls_session($db, $ecs->table('sessions'), $ecs->table('sessions_data'), 'ECSCP_ID');
+//$_SESSION['app']  = 'rbc_parter';
 
 /* 初始化 action */
 if (!isset($_REQUEST['act']))
@@ -236,6 +237,10 @@ else
 //}
 //
 ///* 验证管理员身份 */
+//    if(isset($_SESSION['app']) && $_SESSION['app'] !== 'rbc_parter'){
+//        $sess->destroy_session();
+//        ecs_header("Location: ./parterAdmin.php\n");
+//    }
 //if ((!isset($_SESSION['admin_id']) || intval($_SESSION['admin_id']) <= 0) &&
 //    $_REQUEST['act'] != 'login' && $_REQUEST['act'] != 'signin' &&
 //    $_REQUEST['act'] != 'forget_pwd' && $_REQUEST['act'] != 'reset_pwd' && $_REQUEST['act'] != 'check_order')
