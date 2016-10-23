@@ -1,0 +1,155 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>红细胞合作商注册</title>
+    <script src="../js/transport.js"></script>
+</head>
+<body>
+<h1 align="center">红细胞合作商注册</h1>
+<hr>
+<h6 style="color:red" align="center" >*以下所有项为必填项</h6>
+
+<form enctype="multipart/form-data" action="parter.php?act=register" method="post" name="theForm">
+
+    <table align="center">
+        <tr>
+            <td>合作商登陆名:</td>
+            <td><input name='partnersLoginName' value=''/></td>
+        </tr>
+        <tr>
+            <td>合作商全称:</td>
+            <td><input name='partnersName' value=''/></td>
+        </tr>
+        <tr>
+            <td>合作商地址:</td>
+            <td >
+                <div id="areaComponent"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>详细地址:</td>
+            <td><textarea name='detailAddress'/></textarea></td>
+        </tr>
+        <tr>
+            <td>负责人名称:</td>
+            <td><input name='leaderName' value=''/></td>
+        </tr>
+        <tr>
+            <td>负责人手机:</td>
+            <td><input name='leaderPhone' value=''/></td>
+        </tr>
+        <tr>
+            <td>负责人座机:</td>
+            <td><input name='leaderTel[]' placeholder="区号"/>-<input name='leaderTel[]' placeholder="电话号"/>-<input name='leaderTel[]' placeholder="分机号"/></td>
+        </tr>
+        <tr>
+            <td>负责人邮箱:</td>
+            <td><input name='leaderEmail' value=''/></td>
+        </tr>
+        <tr>
+            <td>负责人微信号:</td>
+            <td><input name='leaderWeixin' value=''/></td>
+        </tr>
+        <tr>
+            <td>合作商银行账号:</td>
+            <td><input name='partnersBankAccount' value=''/></td>
+        </tr>
+        <tr>
+            <td>合作商银行账户名称:</td>
+            <td><input name='partnersBankAccountName' value=''/></td>
+        </tr>
+        <tr>
+            <td>合作商开户银行:</td>
+            <td><input name='partnersDepositBank' value=''/></td>
+        </tr>
+        <tr>
+            <td>合作商开户银行地址:</td>
+            <td><input name='partnersBankAddress' value=''/></td>
+        </tr>
+
+    </table>
+    <br>
+    <hr>
+
+    <div style="text-align:center">
+        <input id="submitBtn" style="width: 200px;height: 50px;cursor: pointer;" type="button" value="提交审核" class="button" onclick="validate();"/>
+    </div>
+</form>
+<script>
+
+    // js创建行政区划选择组件
+    function createAreaComponent(name){
+        var div = document.getElementById('areaComponent');
+        var province = document.createElement("select");
+        var city = document.createElement("select");
+        var region = document.createElement("select");
+        province.name= city.name = region.name = name;
+        province.style.marginRight = city.style.marginRight = 6;
+        createOption('', '请选择', province);
+        createOption('', '请选择', city);
+        createOption('', '请选择', region);
+        div.appendChild(province);
+        div.appendChild(city);
+        div.appendChild(region);
+        province.addEventListener("change", initCity);
+        city.addEventListener("change", initRegion);
+
+        function createOption(value, name, parent){
+            var option = document.createElement('option');
+            option.value=  value;
+            option.text = name;
+            parent.appendChild(option);
+            return option;
+        }
+        Ajax.call('area.php?act=province', "", initProvince, "GET", "JSON");
+
+        function initSelect(result, select_element){
+            for(var i = 0 ; i< result.content.length; i++){
+                var code = result.content[i].code;
+                var name = result.content[i].name;
+                createOption(code, name, select_element);
+            }
+        }
+        function initProvince(result){
+            initSelect(result, province);
+        }
+
+        function clearSelect(theSelect){
+            for(var i=theSelect.options.length-1;i>=1;i--)
+
+                theSelect.options.remove(i);
+        }
+        function initCity(target){
+            clearSelect(city);
+            clearSelect(region);
+            var code =   target.target.options[target.target.selectedIndex].value;
+            Ajax.call('area.php?act=city', "code="+code, function(result){
+                initSelect(result, city);
+            }, "GET", "JSON");
+        }
+
+        function initRegion(target){
+            clearSelect(region);
+            var code =   target.target.options[target.target.selectedIndex].value;
+            Ajax.call('area.php?act=region', "code="+code, function(result){
+                initSelect(result, region);
+            }, "GET", "JSON");
+        }
+
+
+
+    }
+    onload =function(){
+        createAreaComponent('partnersAddress[]');
+    }
+    function validate(){
+        var r=confirm("确认提交吗？")
+        if (r==true)
+        {
+            document.forms['theForm'].submit();
+        }
+
+    }
+</script>
+</body>
+</html>

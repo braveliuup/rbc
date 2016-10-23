@@ -1,0 +1,124 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
+<!-- start goods form -->
+<div class="tab-div"> 
+  <!-- tab body -->
+  <div id="tabbody-div">
+    <form enctype="multipart/form-data" action="" method="post" name="theForm" >
+      <table align="center">
+        <tr hidden>
+          <td>id:</td>
+          <td><input {$disabled} name='id' value='{$rbc_parter.id}'/></td>
+        </tr><tr >
+        <td>合作商代码:</td>
+        <td><input {$disabled} name='parter_code' value='{$rbc_parter.parter_code}'/></td>
+      </tr><tr >
+        <td>合作商登陆名:</td>
+        <td><input {$disabled} name='partnersLoginName' value='{$rbc_parter.partnersLoginName}'/></td>
+      </tr><tr >
+        <td>合作商全称:</td>
+        <td><input {$disabled} name='partnersName' value='{$rbc_parter.partnersName}'/></td>
+      </tr><tr >
+        <td>合作商地址:</td>
+        <td>
+          {if $act == 'detail'}
+          <input {$disabled} id="partnersAddress" name='partnersAddress' value='{$rbc_parter.partnersAddress}'/>
+          {/if}
+          {if $act == 'edit'}
+            <div contenteditable="false" id="areaComponent"></div>
+          {/if}
+
+          </td>
+      </tr><tr >
+        <td>详细地址:</td>
+        <td><textarea {$disabled} name='detailAddress' />{$rbc_parter.detailAddress}</textarea></td>
+      </tr><tr >
+        <td>负责人名称:</td>
+        <td><input {$disabled} name='leaderName' value='{$rbc_parter.leaderName}'/></td>
+      </tr><tr >
+        <td>负责人手机:</td>
+        <td><input {$disabled} name='leaderPhone' value='{$rbc_parter.leaderPhone}'/></td>
+      </tr><tr >
+        <td>负责人座机:</td>
+        <td><input {$disabled} name='leaderTel' value='{$rbc_parter.leaderTel}'/></td>
+      </tr><tr >
+        <td>负责人邮箱:</td>
+        <td><input {$disabled} name='leaderEmail' value='{$rbc_parter.leaderEmail}'/></td>
+      </tr><tr >
+        <td>负责人微信号:</td>
+        <td><input {$disabled} name='leaderWeixin' value='{$rbc_parter.leaderWeixin}'/></td>
+      </tr><tr >
+        <td>合作商银行账号:</td>
+        <td><input {$disabled} name='partnersBankAccount' value='{$rbc_parter.partnersBankAccount}'/></td>
+      </tr><tr >
+        <td>合作商银行账户名称:</td>
+        <td><input {$disabled} name='partnersBankAccountName' value='{$rbc_parter.partnersBankAccountName}'/></td>
+      </tr><tr >
+        <td>合作商开户银行:</td>
+        <td><input {$disabled} name='partnersDepositBank' value='{$rbc_parter.partnersDepositBank}'/></td>
+      </tr><tr >
+        <td>合作商开户银行地址:</td>
+        <td><input {$disabled} name='partnersBankAddress' value='{$rbc_parter.partnersBankAddress}'/></td>
+      </tr><tr >
+        <td>合作商分佣比例:</td>
+        <td><input {$disabled} name='parter_share_percent' value='{$rbc_parter.parter_share_percent}'/>%</td>
+      </tr><tr >
+        <td>合作商员工建议分佣比例:</td>
+        <td><input {$disabled} name='pater_emp_share_percent' value='{$rbc_parter.pater_emp_share_percent}'/>%</td>
+      </tr><tr >
+        <td>结款日:</td>
+        <td>每月 <input {$disabled} name='paymentDate' value='{$rbc_parter.paymentDate}'/> 为结款日</td>
+      </tr>
+        {if $act neq 'edit'}
+        <tr >
+        <td>审核状态:</td>
+        <td><input {$disabled} name='check_state' value='{$rbc_parter.check_state}'/></td>
+      </tr><tr >
+        <td>可用状态:</td>
+        <td><input {$disabled} name='valid_state' value='{$rbc_parter.valid_state}'/></td>
+      </tr>
+        <tr >
+        <td>审核人:</td>
+        <td><input {$disabled} name='check_man' value='{$rbc_parter.check_man}'/></td>
+      </tr><tr >
+        <td>审核人编号:</td>
+        <td><input {$disabled} name='check_man_code' value='{$rbc_parter.check_man_code}'/></td>
+      </tr>
+        {/if}
+      </table>
+      <div class="button-div">
+        {if $act eq 'edit'}
+        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
+        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
+        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
+        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
+        {/if}
+      </div>
+    </form>
+  </div>
+</div>
+<!-- end goods form -->
+{insert_scripts files="validator.js,tab.js,showbox.js"}
+<script>
+
+
+
+  function initAreaComp (){
+    {literal} var addr = '{$rbc_parter.partnersAddress}';{/literal}
+    if(addr != ''){
+      Ajax.call('area.php?act=parse_code','code='+encodeURIComponent(addr), function(result){
+        var nameary = result.content.split(' ');
+        var codeary = addr.split('#');
+        setSelectChecked(areaCom.province, nameary[0]);
+        areaCom.initCity(codeary[0],nameary[1]);
+        areaCom.initRegion(codeary[1], nameary[2]);
+      },'GET', 'JSON');
+    }
+  }
+
+</script>
+<script src="js/area.js"></script>
+
+{include file="pagefooter.htm"}
