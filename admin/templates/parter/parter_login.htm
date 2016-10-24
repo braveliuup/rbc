@@ -57,10 +57,10 @@ a {
             <td width="131">合作商登录名</td>
             <td colspan="2"><input type="text" name="username" style=" width:216px; height:24px; padding:0; line-height:24px; background:url(images/txtbg.png) no-repeat; border:none; padding:0px 3px;" /></td>
           </tr>
-          <!--<tr>-->
-            <!--<td>密码</td>-->
-            <!--<td colspan="2"><input type="password" name="password" style=" width:216px; line-height:24px; padding:0; height:24px; background:url(images/txtbg.png) no-repeat; border:none; padding:0px 3px;" /></td>-->
-          <!--</tr>-->
+          <tr>
+            <td>密码</td>
+           <td colspan="2"><input type="password" name="pwd" style=" width:216px; line-height:24px; padding:0; height:24px; background:url(images/txtbg.png) no-repeat; border:none; padding:0px 3px;" /></td>
+         </tr>
           <!--<tr>-->
             <!--<td align="right">&nbsp;</td>-->
             <!--<td colspan="2" align="left"><input type="checkbox" value="1" name="remember" id="remember"/>-->
@@ -90,7 +90,7 @@ a {
   {
     var validator = new Validator('theForm');
     validator.required('username', '请输入您的登录名');
-//    validator.required('password', '请输入您的用户名');
+    validator.required('pwd', '请输入您的密码');
 //    if (document.forms['theForm'].elements['captcha'])
 //    {
 //      validator.required('captcha', captcha_empty);

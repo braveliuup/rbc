@@ -40,7 +40,7 @@ elseif($_REQUEST['act'] == 'signin'){
     /* 检查密码是否正确 */
     $sql = "SELECT id,partnersLoginName, partnersName".
         " FROM rbc_parter" .
-        " WHERE partnersLoginName = '{$_POST['username']}'" ;
+        " WHERE partnersLoginName = '{$_POST['username']}' and pwd = '{$_POST['pwd']}'" ;
 
     $row = $GLOBALS['db']->getRow($sql);
     if ($row)
@@ -54,7 +54,7 @@ elseif($_REQUEST['act'] == 'signin'){
     }
     else
     {
-        sys_msg('合作商登录名不存在', 1);
+        sys_msg('合作商登录名或密码不存在', 1);
     }
 }
 /*------------------------------------------------------ */

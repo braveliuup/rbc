@@ -17,6 +17,14 @@
             <td><input name='partnersLoginName' value=''/></td>
         </tr>
         <tr>
+            <td>登陆密码:</td>
+            <td><input type="password" name='pwd' id="pwd" value=''/></td>
+        </tr>
+        <tr>
+            <td>确认密码:</td>
+            <td><input id="pwd_confirm" type="password" onblur="checkPwd();" value=''/><span id="pwdTip" style="display:none;color:red">两次输入的密码不一样，请重新输入</span></td>
+        </tr>
+        <tr>
             <td>合作商全称:</td>
             <td><input name='partnersName' value=''/></td>
         </tr>
@@ -142,7 +150,22 @@
     onload =function(){
         createAreaComponent('partnersAddress[]');
     }
+
+    var pwdTip = document.getElementById("pwdTip");
+    function checkPwd(){
+        var pwd_confirm = document.getElementById("pwd_confirm");
+        var pwd = document.getElementById("pwd");
+        if(pwd_confirm.value != pwd.value){
+            pwdTip.style.display = 'inline';
+        }else{
+            pwdTip.style.display = 'none';
+        }
+    }
     function validate(){
+        if(pwdTip.style.display != 'none'){
+            alert('请确认密码输入一致');
+            return false;
+        }
         var r=confirm("确认提交吗？")
         if (r==true)
         {
