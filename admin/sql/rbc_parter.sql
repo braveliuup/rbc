@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50045
 File Encoding         : 65001
 
-Date: 2016-10-23 16:04:56
+Date: 2016-10-23 16:29:51
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -39,7 +39,7 @@ CREATE TABLE `rbc_parter` (
   `pater_emp_share_percent` double default NULL COMMENT '合作商员工建议分佣比例',
   `paymentDate` varchar(0) default NULL COMMENT '结款日',
   `check_state` varchar(255) default '未审核' COMMENT '审核状态',
-  `valid_state` varchar(255) default '可用' COMMENT '可用状态',
+  `valid_state` varchar(255) default '停用' COMMENT '可用状态',
   `check_man` varchar(255) default NULL COMMENT '审核人',
   `check_man_code` varchar(255) default NULL COMMENT '审核人编号',
   PRIMARY KEY  (`id`)

@@ -11,10 +11,14 @@
         <tr hidden>
           <td>id:</td>
           <td><input {$disabled} name='id' value='{$rbc_parter.id}'/></td>
-        </tr><tr >
+        </tr>
+        {if $act == 'detail'}
+        <tr >
         <td>合作商代码:</td>
         <td><input {$disabled} name='parter_code' value='{$rbc_parter.parter_code}'/></td>
-      </tr><tr >
+        </tr>
+        {/if}
+        <tr >
         <td>合作商登陆名:</td>
         <td><input {$disabled} name='partnersLoginName' value='{$rbc_parter.partnersLoginName}'/></td>
       </tr><tr >
@@ -90,10 +94,10 @@
       </table>
       <div class="button-div">
         {if $act eq 'edit'}
-        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
-        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
-        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
-        <input type="button" value="{$lang.button_submit}" class="button" onclick="validate('{$goods.goods_id}')" />
+        <input type="button" value="确认修改" class="button" onclick="update('{$goods.goods_id}')" />
+        <input type="button" value="通过审核" class="button" onclick="('{$goods.goods_id}')" />
+        <input type="button" value="退回审核" class="button" onclick="validate('{$goods.goods_id}')" />
+        <input type="button" value="取消" class="button" onclick="validate('{$goods.goods_id}')" />
         {/if}
       </div>
     </form>
