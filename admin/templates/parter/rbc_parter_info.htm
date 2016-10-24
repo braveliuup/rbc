@@ -1,0 +1,138 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
+<!-- start goods form -->
+<style>
+  .head_div span{
+    font-size: 18px;
+    margin-right: 20px;
+  }
+</style>
+<div class="tab-div">
+  <div class="head_div">
+    <table cellspacing="10">
+      <tr>
+        <td colspan="3">
+          <span >VIP会员人数：100</span>
+        </td>
+      </tr>
+      <tr>
+        <td >
+          <span >本周期成交金额：10002</span>
+        </td>
+
+        <td>
+          <span >本周期分成金额：5000</span>
+        </td>
+        <td >
+         <span > 本周期员工分成金额：2310</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <hr>
+  <!-- tab body -->
+  <div id="tabbody-div">
+    <form enctype="multipart/form-data" action="parter.php?act=update" method="post" name="theForm" >
+      <table align="center">
+        <tr hidden>
+          <td>id:</td>
+          <td><input readonly name='id' value='{$rbc_parter.id}'/></td>
+        </tr>
+        <tr >
+        <td>合作商代码:</td>
+        <td><input readonly  name='parter_code' value='{$rbc_parter.parter_code}'/></td>
+        </tr>
+
+        <tr >
+        <td>合作商登陆名:</td>
+        <td><input readonly name='partnersLoginName' value='{$rbc_parter.partnersLoginName}'/></td>
+      </tr><tr >
+        <td>合作商全称:</td>
+        <td><input readonly name='partnersName' value='{$rbc_parter.partnersName}'/></td>
+      </tr><tr >
+        <td>合作商地址:</td>
+        <td>
+          <input readonly id="partnersAddress" name='partnersAddress' value='{$rbc_parter.partnersAddress}'/>
+          </td>
+      </tr><tr >
+        <td>详细地址:</td>
+        <td><textarea readonly name='detailAddress' />{$rbc_parter.detailAddress}</textarea></td>
+      </tr><tr >
+        <td>负责人名称:</td>
+        <td><input readonly name='leaderName' value='{$rbc_parter.leaderName}'/></td>
+      </tr><tr >
+        <td>负责人手机:</td>
+        <td><input readonly name='leaderPhone' value='{$rbc_parter.leaderPhone}'/></td>
+      </tr><tr >
+        <td>负责人座机:</td>
+        <td><input readonly name='leaderTel' value='{$rbc_parter.leaderTel}'/></td>
+      </tr><tr >
+        <td>负责人邮箱:</td>
+        <td><input readonly name='leaderEmail' value='{$rbc_parter.leaderEmail}'/></td>
+      </tr><tr >
+        <td>负责人微信号:</td>
+        <td><input readonly name='leaderWeixin' value='{$rbc_parter.leaderWeixin}'/></td>
+      </tr><tr >
+        <td>合作商银行账号:</td>
+        <td><input readonly name='partnersBankAccount' value='{$rbc_parter.partnersBankAccount}'/></td>
+      </tr><tr >
+        <td>合作商银行账户名称:</td>
+        <td><input readonly name='partnersBankAccountName' value='{$rbc_parter.partnersBankAccountName}'/></td>
+      </tr><tr >
+        <td>合作商开户银行:</td>
+        <td><input readonly name='partnersDepositBank' value='{$rbc_parter.partnersDepositBank}'/></td>
+      </tr><tr >
+        <td>合作商开户银行地址:</td>
+        <td><input readonly name='partnersBankAddress' value='{$rbc_parter.partnersBankAddress}'/></td>
+      </tr><tr >
+        <td>合作商分佣比例:</td>
+        <td><input readonly name='parter_share_percent' value='{$rbc_parter.parter_share_percent}'/>%</td>
+      </tr><tr >
+        <td>合作商员工建议分佣比例:</td>
+        <td><input readonly name='pater_emp_share_percent' value='{$rbc_parter.pater_emp_share_percent}'/>%</td>
+      </tr><tr >
+        <td>结款日:</td>
+        <td>每月 <input readonly name='paymentDate' value='{$rbc_parter.paymentDate}'/> 为结款日</td>
+      </tr>
+        <tr >
+        <td>审核状态:</td>
+        <td><input readonly name='check_state' value='{$rbc_parter.check_state}'/></td>
+      </tr><tr >
+        <td>可用状态:</td>
+        <td><input readonly name='valid_state' value='{$rbc_parter.valid_state}'/></td>
+      </tr>
+      </table>
+      <div class="button-div">
+
+      </div>
+    </form>
+  </div>
+</div>
+<!-- end goods form -->
+{insert_scripts files="validator.js,tab.js,showbox.js"}
+<script>
+  function validate(id){
+    var form  = document.forms['theForm'];
+    form.submit();
+  }
+
+
+  function initAreaComp (){
+    {literal} var addr = '{$rbc_parter.partnersAddress}';{/literal}
+    if(addr != ''){
+      Ajax.call('area.php?act=parse_code','code='+encodeURIComponent(addr), function(result){
+        var nameary = result.content.split(' ');
+        var codeary = addr.split('#');
+        setSelectChecked(areaCom.province, nameary[0]);
+        areaCom.initCity(codeary[0],nameary[1]);
+        areaCom.initRegion(codeary[1], nameary[2]);
+      },'GET', 'JSON');
+    }
+  }
+
+</script>
+<script src="js/area.js"></script>
+
+{include file="pagefooter.htm"}
