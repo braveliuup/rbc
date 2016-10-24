@@ -6,29 +6,29 @@
 <div class="tab-div"> 
   <!-- tab body -->
   <div id="tabbody-div">
-    <form enctype="multipart/form-data" action="" method="post" name="theForm" >
+    <form enctype="multipart/form-data" action="parter.php?act=update" method="post" name="theForm" >
       <table align="center">
         <tr hidden>
           <td>id:</td>
-          <td><input {$disabled} name='id' value='{$rbc_parter.id}'/></td>
+          <td><input {$readonly} name='id' value='{$rbc_parter.id}'/></td>
         </tr>
-        {if $act == 'detail'}
-        <tr >
+
+        <tr {if $act eq 'edit'}hidden{/if}>
         <td>合作商代码:</td>
-        <td><input {$disabled} name='parter_code' value='{$rbc_parter.parter_code}'/></td>
+        <td><input readonly  name='parter_code' value='{$rbc_parter.parter_code}'/></td>
         </tr>
-        {/if}
+
         <tr >
         <td>合作商登陆名:</td>
-        <td><input {$disabled} name='partnersLoginName' value='{$rbc_parter.partnersLoginName}'/></td>
+        <td><input readonly name='partnersLoginName' value='{$rbc_parter.partnersLoginName}'/></td>
       </tr><tr >
         <td>合作商全称:</td>
-        <td><input {$disabled} name='partnersName' value='{$rbc_parter.partnersName}'/></td>
+        <td><input {$readonly} name='partnersName' value='{$rbc_parter.partnersName}'/></td>
       </tr><tr >
         <td>合作商地址:</td>
         <td>
           {if $act == 'detail'}
-          <input {$disabled} id="partnersAddress" name='partnersAddress' value='{$rbc_parter.partnersAddress}'/>
+          <input {$readonly} id="partnersAddress" name='partnersAddress' value='{$rbc_parter.partnersAddress}'/>
           {/if}
           {if $act == 'edit'}
             <div contenteditable="false" id="areaComponent"></div>
@@ -37,67 +37,85 @@
           </td>
       </tr><tr >
         <td>详细地址:</td>
-        <td><textarea {$disabled} name='detailAddress' />{$rbc_parter.detailAddress}</textarea></td>
+        <td><textarea {$readonly} name='detailAddress' />{$rbc_parter.detailAddress}</textarea></td>
       </tr><tr >
         <td>负责人名称:</td>
-        <td><input {$disabled} name='leaderName' value='{$rbc_parter.leaderName}'/></td>
+        <td><input {$readonly} name='leaderName' value='{$rbc_parter.leaderName}'/></td>
       </tr><tr >
         <td>负责人手机:</td>
-        <td><input {$disabled} name='leaderPhone' value='{$rbc_parter.leaderPhone}'/></td>
+        <td><input {$readonly} name='leaderPhone' value='{$rbc_parter.leaderPhone}'/></td>
       </tr><tr >
         <td>负责人座机:</td>
-        <td><input {$disabled} name='leaderTel' value='{$rbc_parter.leaderTel}'/></td>
+        <td><input {$readonly} name='leaderTel' value='{$rbc_parter.leaderTel}'/></td>
       </tr><tr >
         <td>负责人邮箱:</td>
-        <td><input {$disabled} name='leaderEmail' value='{$rbc_parter.leaderEmail}'/></td>
+        <td><input {$readonly} name='leaderEmail' value='{$rbc_parter.leaderEmail}'/></td>
       </tr><tr >
         <td>负责人微信号:</td>
-        <td><input {$disabled} name='leaderWeixin' value='{$rbc_parter.leaderWeixin}'/></td>
+        <td><input {$readonly} name='leaderWeixin' value='{$rbc_parter.leaderWeixin}'/></td>
       </tr><tr >
         <td>合作商银行账号:</td>
-        <td><input {$disabled} name='partnersBankAccount' value='{$rbc_parter.partnersBankAccount}'/></td>
+        <td><input {$readonly} name='partnersBankAccount' value='{$rbc_parter.partnersBankAccount}'/></td>
       </tr><tr >
         <td>合作商银行账户名称:</td>
-        <td><input {$disabled} name='partnersBankAccountName' value='{$rbc_parter.partnersBankAccountName}'/></td>
+        <td><input {$readonly} name='partnersBankAccountName' value='{$rbc_parter.partnersBankAccountName}'/></td>
       </tr><tr >
         <td>合作商开户银行:</td>
-        <td><input {$disabled} name='partnersDepositBank' value='{$rbc_parter.partnersDepositBank}'/></td>
+        <td><input {$readonly} name='partnersDepositBank' value='{$rbc_parter.partnersDepositBank}'/></td>
       </tr><tr >
         <td>合作商开户银行地址:</td>
-        <td><input {$disabled} name='partnersBankAddress' value='{$rbc_parter.partnersBankAddress}'/></td>
+        <td><input {$readonly} name='partnersBankAddress' value='{$rbc_parter.partnersBankAddress}'/></td>
       </tr><tr >
         <td>合作商分佣比例:</td>
-        <td><input {$disabled} name='parter_share_percent' value='{$rbc_parter.parter_share_percent}'/>%</td>
+        <td><input {$readonly} name='parter_share_percent' value='{$rbc_parter.parter_share_percent}'/>%</td>
       </tr><tr >
         <td>合作商员工建议分佣比例:</td>
-        <td><input {$disabled} name='pater_emp_share_percent' value='{$rbc_parter.pater_emp_share_percent}'/>%</td>
+        <td><input {$readonly} name='pater_emp_share_percent' value='{$rbc_parter.pater_emp_share_percent}'/>%</td>
       </tr><tr >
         <td>结款日:</td>
-        <td>每月 <input {$disabled} name='paymentDate' value='{$rbc_parter.paymentDate}'/> 为结款日</td>
+        <td>每月 <input {$readonly} name='paymentDate' value='{$rbc_parter.paymentDate}'/> 为结款日</td>
       </tr>
-        {if $act neq 'edit'}
+        {if $act eq 'edit'}
+        <tr >
+          <td>审核状态:</td>
+          <td>
+            <select name='check_state' >
+              <option value="审核" {if $rbc_parter.check_state eq '审核'}selected{/if}>审核</option>
+              <option value="未审核" {if $rbc_parter.check_state eq '未审核'}selected{/if}>未审核</option>
+              <option value="未通过" {if $rbc_parter.check_state eq '未通过'}selected{/if}>未通过</option>
+            </select>
+          </td>
+        </tr>
+        <tr >
+          <td>可用状态:</td>
+          <td>
+          <select  name='valid_state' >
+            <option value="可用" {if $rbc_parter.valid_state eq '可用'}selected{/if}>可用</option>
+            <option value="停用" {if $rbc_parter.valid_state eq '停用'}selected{/if}>停用</option>
+          </select>
+          </td>
+        </tr>
+        {/if}
+        {if $act eq 'detail'}
         <tr >
         <td>审核状态:</td>
-        <td><input {$disabled} name='check_state' value='{$rbc_parter.check_state}'/></td>
+        <td><input {$readonly} name='check_state' value='{$rbc_parter.check_state}'/></td>
       </tr><tr >
         <td>可用状态:</td>
-        <td><input {$disabled} name='valid_state' value='{$rbc_parter.valid_state}'/></td>
+        <td><input {$readonly} name='valid_state' value='{$rbc_parter.valid_state}'/></td>
       </tr>
         <tr >
         <td>审核人:</td>
-        <td><input {$disabled} name='check_man' value='{$rbc_parter.check_man}'/></td>
+        <td><input {$readonly} name='check_man' value='{$rbc_parter.check_man}'/></td>
       </tr><tr >
         <td>审核人编号:</td>
-        <td><input {$disabled} name='check_man_code' value='{$rbc_parter.check_man_code}'/></td>
+        <td><input {$readonly} name='check_man_code' value='{$rbc_parter.check_man_code}'/></td>
       </tr>
         {/if}
       </table>
       <div class="button-div">
         {if $act eq 'edit'}
-        <input type="button" value="确认修改" class="button" onclick="update('{$goods.goods_id}')" />
-        <input type="button" value="通过审核" class="button" onclick="('{$goods.goods_id}')" />
-        <input type="button" value="退回审核" class="button" onclick="validate('{$goods.goods_id}')" />
-        <input type="button" value="取消" class="button" onclick="validate('{$goods.goods_id}')" />
+        <input type="button" value="确认修改" class="button" onclick="validate('{$rbc_parter.id}')" />
         {/if}
       </div>
     </form>
@@ -106,7 +124,10 @@
 <!-- end goods form -->
 {insert_scripts files="validator.js,tab.js,showbox.js"}
 <script>
-
+  function validate(id){
+    var form  = document.forms['theForm'];
+    form.submit();
+  }
 
 
   function initAreaComp (){

@@ -14,6 +14,7 @@
 define('IN_ECS', true);
 require(dirname(__FILE__) . '/includes/init.php');
 require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_parter.php');
+require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/cls_pingyin.php');
 $exc = new exchange('rbc_parter', $db, 'id', 'parter_code');
 if(!empty($_REQUEST['act']) && $_REQUEST['act'] == 'register'){
     $fields;
@@ -104,7 +105,7 @@ else if($_REQUEST['act'] == 'detail'){
     $smarty->assign('action_link',  $action_link);
     $partersInfo = get_parters($_REQUEST['id']);
     $smarty->assign('rbc_parter', $partersInfo);
-    $smarty->assign('disabled', 'disabled');
+    $smarty->assign('readonly', 'readonly');
     $smarty->assign('act', 'detail');
 
     $smarty->display('parters_info.htm');
@@ -115,9 +116,73 @@ else if($_REQUEST['act'] == 'edit'){
     $smarty->assign('action_link',  $action_link);
     $partersInfo = get_parters($_REQUEST['id']);
     $smarty->assign('rbc_parter', $partersInfo);
-    $smarty->assign('disabled', '');
+    $smarty->assign('readonly', '');
     $smarty->assign('act', 'edit');
 
     $smarty->display('parters_info.htm');
+}
+else if($_REQUEST['act'] == 'update'){
+    // 管理员更新合作商信息，审核通过，自动生成合作商代码
+    /*
+     * 通过审核后，自动启用，系统分配合作商编号：
+     * 规则J+区号+公司名首字母缩写例：惠普-HP，如有重复-判断J+区号+公司名首字母是否有重复，系统自动添加丛01序号自增长
+     * */
+    if($_REQUEST['check_state'] == '审核' && $_REQUEST['parter_code'] == ''){
+        $tel = $_REQUEST['leaderTel'];
+        $ary = explode('#', $tel);
+        $zoneNum = $ary[0];
+        $PingYing = new GetPingYing();
+        // 公司名字首字母缩写
+        $cpname_ab = $PingYing->getFirstPY($_REQUEST['partnersName']);
+        $cpcode = 'J'.$zoneNum.$cpname_ab;
+        $PingYing = null;
+        $sql = "select count(*) count from rbc_parter where parter_code = '{$cpcode}' ";
+        $result = $db->getOne($sql);
+        if($result != 0){
+            $cpcode .= $result;
+        }
+        $_POST['parter_code'] = $cpcode;
+    }
+
+    $fields;
+    $values;
+    $errfields = array();
+    $v =0;
+    foreach($_POST as $key=>$value){
+        if($v != 0){
+            $fields .= ',';
+            $values .=',';
+        }
+        if(is_array($value)){
+            foreach($value as $k=>$val){
+                if($val == ''){
+                    array_push($errfields, $key);
+                    break;
+                }
+            }
+            $value = implode('#', $value);
+        }
+        if($value == ''){
+            array_push($errfields, $key);
+        }
+        $fields .= $key;
+        $values .= '\''.$value.'\'';
+        $v = 1;
+    }
+    $sql = "delete from rbc_parter where id = {$_REQUEST['id']}";
+    if($db->query($sql)){
+        $sql = 'insert into rbc_parter ('.$fields.') values ('.$values.')';
+        $result = $GLOBALS['db']->query($sql);
+        if($result){
+            /* 提示页面 */
+            $link = array();
+            $link[0] = array('href' => 'parter.php?act=list');
+            sys_msg('修改成功', 0, $link);
+        }else{
+            sys_msg('数据更新失败', 1);
+        }
+    }else{
+        sys_msg('数据更新失败', 1);
+    }
 }
 ?>
