@@ -84,7 +84,8 @@ else if($_REQUEST['act'] == 'list') {
     /* 查询性能监控 */
     assign_query_info();
     $smarty->display('parter_list.htm');
-}else if($_REQUEST['act'] == 'query'){
+}
+else if($_REQUEST['act'] == 'query'){
     $parters_list = parters_list();
     $smarty->assign('parters_list',   $parters_list['parters']);
     $smarty->assign('filter', $parters_list['filter']);

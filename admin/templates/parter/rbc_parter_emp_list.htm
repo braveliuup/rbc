@@ -10,28 +10,17 @@
     <span>查询：</span><input name="keyword" placeholder="员工编号/登录名/姓名/手机号"/>
     <!-- 状态 -->
     <span>状态：</span>
-    <select name="check_state">
+    <select name="state">
       <option value="">请选择</option>
-      <option value="试用">试用</option>
-      <option value="正式">正式</option>
-      <option value="离职">离职</option>
+      <option value="可用">可用</option>
+      <option value="停用">停用</option>
     </select>
     <span>性别：</span>
-    <select name="check_state">
+    <select name="sex">
       <option value="">请选择</option>
       <option value="男">男</option>
       <option value="女">女</option>
     </select>
-    <input name="check_man_keyword" placeholder="审核人编号/姓名"/>
-    <span>分成比例：</span>
-    <input name="parter_share_percent"/>%
-    <span>可用状态：</span>
-    <select name="valid_state">
-      <option value="0">请选择</option>
-      <option value="可用">可用</option>
-      <option value="停用">停用</option>
-    </select>
-
     <input type="submit" value="搜索" class="button" />
   </form>
 </div>
@@ -39,21 +28,8 @@
   function searchParters()
   {
     listTable.filter['keyword'] = Utils.trim(document.forms['searchForm'].elements['keyword'].value);
-    var addr = "";
-    for(var i = 0 ; i < document.forms['searchForm'].elements['partnersAddress[]'].length; i++){
-      var val = document.forms['searchForm'].elements['partnersAddress[]'][i].value;
-      if(val ){
-        addr += val+'#';
-      }
-    }
-    if(addr != ""){
-      addr = addr.substr(0, addr.length-1);
-    }
-    listTable.filter['partnersAddress'] =addr;
-    listTable.filter['check_state'] = (document.forms['searchForm'].elements['check_state'].value);
-    listTable.filter['check_man_keyword'] = Utils.trim(document.forms['searchForm'].elements['check_man_keyword'].value);
-    listTable.filter['parter_share_percent'] = Utils.trim(document.forms['searchForm'].elements['parter_share_percent'].value);
-    listTable.filter['valid_state'] = (document.forms['searchForm'].elements['valid_state'].value);
+    listTable.filter['state'] = (document.forms['searchForm'].elements['state'].value);
+    listTable.filter['sex'] = (document.forms['searchForm'].elements['sex'].value);
     listTable.filter['page'] = 1;
     listTable.loadList();
   }
@@ -125,32 +101,29 @@
     <th>
       <input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号
     </th>
-    <th>合作商编号</a></th>
-    <th>合作商全称</a></th>
-    <th>分成比例</a></th>
-    <th>负责人姓名</a></th>
-    <th>负责人手机</a></th>
-    <th>负责人座机</a></th>
-    <th>审核状态</a></th>
+    <th>员工编号</a></th>
+    <th>员工登录账号</a></th>
+    <th>员工姓名</a></th>
+    <th>员工性别</a></th>
+    <th>员工手机号</a></th>
+    <th>员工提成比例</a></th>
     <th>可用状态</a></th>
     <th>操作</th>
   <tr>
-  {foreach from=$parters_list item=parters}
+  {foreach from=$list item=obj}
   <tr>
-    <td><input type="checkbox" name="checkboxes[]"  value="{$parters.id}"/>{$parters.id}</td>
-    <td><span>{$parters.parter_code}</span></td>
-    <td><span>{$parters.partnersName}</span></td>
-    <td><span>{$parters.parter_share_percent}</span></td>
-    <td><span>{$parters.leaderName}</span></td>
-    <td><span>{$parters.leaderPhone}</span></td>
-    <td><span>{$parters.leaderTel}</span></td>
-    <td><span>{$parters.check_state}</span></td>
-    <td><span>{$parters.valid_state}</span></td>
+    <td><input type="checkbox" name="checkboxes[]"  value="{$obj.id}"/>{$obj.id}</td>
+    <td><span>{$obj.staffID}</span></td>
+    <td><span>{$obj.loginID}</span></td>
+    <td><span>{$obj.staffName}</span></td>
+    <td><span>{$obj.sex}</span></td>
+    <td><span>{$obj.phone}</span></td>
+    <td><span>{$obj.commission}</span></td>
+    <td><span>{$obj.state}</span></td>
     <td align="center">
-      <a href="parter.php?act=detail&id={$parters.id}">详细</a>
-      <a href="parter.php?act=edit&id={$parters.id}" >修改</a>
-      <a href="javascript:validParter({$parters.id})" >启用/停用</a>
-      <!--<a href="#parter.php?act=point_shop&id={$parters.id}">查看积分商城</a>-->
+      <a href="parterAdmin.php?act=edit_parter_emp&id={$obj.id}" >修改</a>
+      <a href="javascript:validUser({$obj.id})" >启用/停用</a>
+      <!--<a href="#parter.php?act=point_shop&id={$obj.id}">查看积分商城</a>-->
     </td>
   </tr>
   {foreachelse}
@@ -184,12 +157,12 @@
   listTable.filter.{$key} = '{$item}';
   {/foreach}
 
-  function validParter(id){
+  function validUser(id){
     function callback(result){
       console.log(result)
       listTable.loadList();
     }
-   Ajax.call('parter.php?act=valid', "id="+id, callback, "POST", "JSON");
+   Ajax.call('parterAdmin.php?act=valid', "id="+id, callback, "POST", "JSON");
   }
 </script>
 {if $full_page}

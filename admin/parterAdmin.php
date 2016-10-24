@@ -83,7 +83,8 @@ elseif ($_REQUEST['act'] == 'menu')
 elseif ($_REQUEST['act'] == 'main')
 {
     $smarty->display('parter\parter_start.htm');
-}elseif($_REQUEST['act'] == 'parter_info')
+}
+elseif($_REQUEST['act'] == 'parter_info')
 {
     $smarty->assign('ur_here', '合作商基本信息');
     $partersInfo = get_parters($_SESSION['admin_id']);
@@ -91,5 +92,110 @@ elseif ($_REQUEST['act'] == 'main')
     $smarty->assign('readonly', 'readonly');
     $smarty->display('parter\rbc_parter_info.htm');
 }
+else if($_REQUEST['act'] == 'rbc_parter_emp_list')
+{
+    /* pageheader 赋值*/
+    $smarty->assign('ur_here', '员工列表');
+    $action_link = array('href' => 'parterAdmin.php?act=add_parter_emp',  'text' => '添加员工');
+    $smarty->assign('action_link',  $action_link);
 
+    /* 列表赋值*/
+    $list = parter_emp_list($_SESSION['admin_id']);
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 1);
+    $smarty->display('parter\rbc_parter_emp_list.htm');
+}
+else if($_REQUEST['act'] == 'query')
+{
+    $list = parter_emp_list($_SESSION['admin_id']);
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 0);
+    make_json_result($smarty->fetch('parter\rbc_parter_emp_list.htm'),'',
+        array('filter' => $list['filter'], 'page_count' => $list['page_count']));
+}
+else if($_REQUEST['act'] == 'valid')
+{
+    $sql = "update rbc_parter_staff_info set state = CASE WHEN state = '可用' then '停用' WHEN  state = '停用' then  '可用' end where id = {$_REQUEST['id']}";
+    $ret = $GLOBALS['db']->query($sql) or make_json_error($GLOBALS['db']->error());
+    make_json_result($ret);
+}
+else if($_REQUEST['act'] == 'add_parter_emp')
+{
+    $smarty->assign('ur_here', '添加员工');
+    $action_link = array('href' => 'parterAdmin.php?act=rbc_parter_emp_list',  'text' => '员工列表');
+    $smarty->assign('action_link',  $action_link);
+
+    $smarty->assign('parter_id',$_SESSION['admin_id']);
+    $smarty->assign('act','add');
+    $smarty->display('parter\rbc_parter_emp_info.htm');
+}
+else if($_REQUEST['act'] =='validateAccount')
+{
+    $login_id = $_REQUEST['login_id'];
+    $sql = "select count(*) from rbc_parter_staff_info where loginID = '{$login_id}'";
+    $rows = $db->getOne($sql);
+    if($rows > 0){
+        make_json_error('账号已存在');
+    }else{
+        make_json_result('账号可以用');
+    }
+}
+else if($_REQUEST['act'] =='edit_parter_emp')
+{
+    $smarty->assign('ur_here', '修改员工');
+    $action_link = array('href' => 'parterAdmin.php?act=rbc_parter_emp_list',  'text' => '员工列表');
+    $smarty->assign('action_link',  $action_link);
+
+    $smarty->assign('act','edit');
+    $smarty->assign('rbc_parter_emp', get_parter_emp($_REQUEST['id']));
+    $smarty->display('parter\rbc_parter_emp_info.htm');
+}
+else if($_REQUEST['act'] =='add_update_emp'){
+    $fields="";
+    $values= "";
+    $insertFlag =$_POST['id'] == '' ? true: false;
+    $v =0;
+    foreach($_POST as $key=>$value){
+        if($insertFlag){
+            if($key == 'id' || $key == 'staffID')continue;
+        }
+        if($v != 0){
+            $fields .= ',';
+            $values .=',';
+        }
+        $fields .= $key;
+        $values .= '\''.$value.'\'';
+        $v = 1;
+    }
+    if($insertFlag){
+        $sql = "insert into rbc_parter_staff_info (".$fields.") values(".$values.")";
+        if($db->query($sql)){
+            $last_id = $db->insert_id();
+            $sql = "select parter_code from rbc_parter where id = {$_POST['parter_id']}";
+            $parter_code = $db->getOne($sql);
+            $sql = 'update rbc_parter_staff_info set staffID = \''.$parter_code.$last_id.'\' where id ='.$last_id;
+            if($db->query($sql)){
+                sys_msg('创建成功', 0, array(array('href' => 'parterAdmin.php?act=rbc_parter_emp_list')));
+            }else{
+                sys_msg('数据插入失败', 1);
+            }
+        }
+    }else{
+        $sql = "delete from rbc_parter_staff_info where id = '{$_POST['id']}'";
+        if($db->query($sql)){
+            $sql = "insert into rbc_parter_staff_info (".$fields.") values(".$values.")";
+            if($db->query($sql)){
+                sys_msg('修改成功', 0, array(array('href' => 'parterAdmin.php?act=rbc_parter_emp_list')));
+            }else{
+                sys_msg('数据修改失败', 1);
+            }
+        }
+    }
+}
 ?>
