@@ -165,7 +165,7 @@
     <td><span>{$obj.check_state}</span></td>
     <td><span>{$obj.valid_state}</span></td>
     <td align="center">
-      <a href="parter.php?act=detail&id={$obj.id}">详细</a>
+      <a href="supplier.php?act=detail&id={$obj.id}">详细</a>
       <a href="javascript:validParter({$obj.id})" >启用/停用</a>
       <!--<a href="#parter.php?act=point_shop&id={$obj.id}">查看积分商城</a>-->
     </td>
@@ -193,7 +193,7 @@
 
 <script type="text/javascript">
   function exportTable(){
-    alert("导出列表数据，未实现");
+    alert("功能暂未实现");
   }
 
   listTable.recordCount = {$record_count};
@@ -208,7 +208,7 @@
       console.log(result)
       listTable.loadList();
     }
-   Ajax.call('parter.php?act=valid', "id="+id, callback, "POST", "JSON");
+   Ajax.call('supplier.php?act=valid', "id="+id, callback, "POST", "JSON");
   }
 </script>
 {if $full_page}

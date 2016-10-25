@@ -10,7 +10,7 @@
   <!-- tab body -->
   <div id="tabbody-div">
     <form enctype="multipart/form-data" action="supplier.php?" method="post" name="theForm" >
-      <input type="hidden" name="MAX_FILE_SIZE" value="2097152" />
+      <!--<input type="hidden" name="MAX_FILE_SIZE" value="2097152" />-->
       <table id="general-table" align="center">
         <tr>
           <td class="label">供应商编号</td>
@@ -18,29 +18,39 @@
         </tr>
         <tr>
           <td class="label">供应商名称</td>
-          <td><input type="text" name="supplierName" value="{$obj.supplierName|escape}"/></td>
+          <td><input {$readonly} type="text" name="supplierName" value="{$obj.supplierName|escape}"/></td>
         </tr>
         <tr>
           <td class="label">供应商登录名</td>
-          <td><input type="text" name="supplierLoginName" value="{$obj.supplierLoginName|escape}"/></td>
+          <td><input {$readonly} type="text" name="supplierLoginName" value="{$obj.supplierLoginName|escape}"/></td>
         </tr>
         <tr>
           <td class="label">供应商登录密码</td>
-          <td><input type="text" name="supplierLoginPassword" value="{$obj.supplierLoginPassword|escape}"/></td>
+          <td><input {$readonly}  type="text" name="supplierLoginPassword" value="{$obj.supplierLoginPassword|escape}"/></td>
         </tr>
         <tr>
           <td class="label">供应商发货地</td>
-          <td><div id="areaComponent" data="supplierShoppingAddress" gen-input="gen-input"></div></td>
+          <td>
+            {if $form_act eq 'detail'}
+            <input {$readonly} data="areaComponent" id="areaComponent" type="text" name="supplierShoppingAddress" value="{$obj.supplierShoppingAddress|escape}"/>
+            {/if}
+            {if $form_act neq 'detail'}
+            <div id="areaComponent" data="supplierShoppingAddress" gen-input="gen-input"></div>
+            {/if}
+          </td>
         </tr>
         <tr>
           <td class="label">供应商详细地址</td>
-          <td><input type="text" name="supplierDetailAddress" value="{$obj.supplierDetailAddress|escape}"/></td>
+          <td>
+              <input {$readonly}  type="text" name="supplierDetailAddress" value="{$obj.supplierDetailAddress|escape}"/>
+          </td>
         </tr>
         <tr>
           <td class="label">生产商名称</td>
           <td>
-            <input id="manufacturer" type="text"  value="{$obj.manufacturer|escape}"/>
-            <input type="button" class="button" value="继续添加" onclick="addProductor();"/>
+            <input id="manufacturer_hidden" type="hidden" name="manufacturer"  value="{$obj.manufacturer|escape}"/>
+            <input id="manufacturer" {$readonly} type="text"  value="{$obj.manufacturer|escape}"/>
+           {if $form_act neq 'detail'} <input type="button" class="button" value="继续添加" onclick="addProductor();"/>{/if}
             <div id="productor_div">
 
             </div>
@@ -48,63 +58,79 @@
         </tr>
         <tr>
           <td class="label">业务联系人名称</td>
-          <td><input type="text" name="businessContactName" value="{$obj.businessContactName|escape}"/></td>
+          <td><input {$readonly}  type="text" name="businessContactName" value="{$obj.businessContactName|escape}"/></td>
         </tr>
         <tr>
           <td class="label">业务联系人手机</td>
-          <td><input type="text" name="businessContacPhone" value="{$obj.businessContacPhone|escape}"/></td>
+          <td><input {$readonly}  type="text" name="businessContacPhone" value="{$obj.businessContacPhone|escape}"/></td>
         </tr>
         <tr>
           <td class="label">订单联系人名称</td>
-          <td><input type="text" name="orderContactName" value="{$obj.orderContactName|escape}"/></td>
+          <td><input  {$readonly} type="text" name="orderContactName" value="{$obj.orderContactName|escape}"/></td>
         </tr>
         <tr>
           <td class="label">订单联系人手机</td>
-          <td><input type="text" name="orderContactPhone" value="{$obj.orderContactPhone|escape}"/></td>
+          <td><input {$readonly}  type="text" name="orderContactPhone" value="{$obj.orderContactPhone|escape}"/></td>
         </tr>
         <tr>
           <td class="label">订单联系人座机</td>
           <td>
             <!--<input type="text" name="orderContactTel[]" value="{$obj.orderContactTel|escape}"/>-->
+            {if $form_act neq 'detail'}
             <input type="text" id="tel_region" placeholder="区号" />-
             <input type="text" id="tel_main" placeholder="电话号" />-
             <input type="text" id="tel_part" placeholder="分机号" />
             <input id="orderContactTel" type="hidden" name="orderContactTel" value=""/>
+            {/if}
+            {if $form_act eq 'detail'}
+            <input  name="orderContactTel" value="{$obj.orderContactTel}"/>
+            {/if}
           </td>
         </tr>
         <tr>
           <td class="label">订单联系人QQ</td>
-          <td><input type="text" name="orderContactQQ" value="{$obj.orderContactQQ|escape}"/></td>
+          <td><input  {$readonly} type="text" name="orderContactQQ" value="{$obj.orderContactQQ|escape}"/></td>
         </tr>
         <tr>
           <td class="label">订单联系人邮箱</td>
-          <td><input type="text" name="orderContactEmail" value="{$obj.orderContactEmail|escape}"/></td>
+          <td><input {$readonly}  type="text" name="orderContactEmail" value="{$obj.orderContactEmail|escape}"/></td>
         </tr>
         <tr>
           <td class="label">是否签订合作协议</td>
           <td>
-            <input type="radio"  name="signAgreement" value="是" onchange="isHasAgreemennt(event);"/>是
-            <input type="radio" checked name="signAgreement" value="否" onchange="isHasAgreemennt(event);"/>否
-            <div id="agreement_div" style="display:none;">
+            <input type="radio" {if $form_act eq 'detail'}disabled{/if}  {if $obj.signAgreement eq '是' }checked{/if} name="signAgreement" value="是" onchange="isHasAgreemennt(event);"/>是
+            <input type="radio"  {if $form_act eq 'detail'}disabled{/if}   {if $obj.signAgreement eq '否' } checked{/if}  name="signAgreement" value="否" onchange="isHasAgreemennt(event);"/>否
+            <div id="agreement_div" style="display:{if $obj.signAgreement eq '否' }none;{/if}{if $obj.signAgreement eq '是' }block;{/if}">
               <span>请上传PDF/WORD格式的协议文档</span>
               <div style="border:solid 1px;margin-bottom: 10px;">
                 <table width="100%" id="file-table"  align="center">
-                  <!--<tr>-->
-                  <!--<td> {foreach from=$img_list item=img key=i}-->
-                  <!--<div id="gallery_{$img.img_id}" style="float:left; text-align:center; border: 1px solid #DADADA; margin: 4px; padding:2px;"> <a href="javascript:;" onclick="if (confirm('{$lang.drop_img_confirm}')) dropImg('{$img.img_id}')">[-]</a><br />-->
-                  <!--<a href="goods.php?act=show_image&img_url={$img.img_url}" target="_blank"> <img src="../{if $img.thumb_url}{$img.thumb_url}{else}{$img.img_url}{/if}" {if $thumb_width neq 0}width="{$thumb_width}"{/if} {if $thumb_height neq 0}height="{$thumb_height}"{/if} border="0" /> </a><br />-->
-                  <!--<input type="text" value="{$img.img_desc|escape}" size="15" name="old_img_desc[{$img.img_id}]" />-->
-                  <!--</div>-->
-                  <!--{/foreach} </td>-->
-                  <!--</tr>-->
-
+                  {if $form_act eq 'detail'}
+                  <tr>
+                  <td>
+                  {foreach from=$img_list item=img key=i}
+                    {if $img.type eq 'file'}
+                    <!--<a href="javascript:;" onclick="if (confirm('{$lang.drop_img_confirm}')) dropImg('{$img.img_id}')">[-]</a><br />-->
+                    <!--<a href="supplier.php?act=show_image&img_url={$img.img_url}" target="_blank">-->
+                    <div style="float:left">
+                    <a href="../{$img.attach_url}" target="_blank" width="64" height="64" border="0" >下载</a>
+                      <br>
+                    <input type="text" value="{$img.attach_desc|escape}" readonly size="15"  />
+                    <!--</a>-->
+                  </div>
+                    {/if}
+                  {/foreach}
+                  </td>
+                  </tr>
+                  {/if}
+                  {if $form_act neq 'detail'}
                   <tr>
                     <td><a href="javascript:;" onclick="addImg(this)">[+]</a> 合作协议描述
                       <input type="text" name="file_desc[]" size="20" />
                       上传合作协议
-                      <input type="file" name="fiel_url[]" accept=".doc,.pdf,.docx"/>
+                      <input type="file" name="file_url[]" accept=".doc,.pdf,.docx"/>
                     </td>
                   </tr>
+                  {/if}
                 </table>
               </div>
             </div>
@@ -115,15 +141,25 @@
           <td>
             <div style="border:solid 1px;">
             <table width="100%" id="gallery-table"  align="center">
-              <!--<tr>-->
-                <!--<td> {foreach from=$img_list item=img key=i}-->
-                  <!--<div id="gallery_{$img.img_id}" style="float:left; text-align:center; border: 1px solid #DADADA; margin: 4px; padding:2px;"> <a href="javascript:;" onclick="if (confirm('{$lang.drop_img_confirm}')) dropImg('{$img.img_id}')">[-]</a><br />-->
-                    <!--<a href="goods.php?act=show_image&img_url={$img.img_url}" target="_blank"> <img src="../{if $img.thumb_url}{$img.thumb_url}{else}{$img.img_url}{/if}" {if $thumb_width neq 0}width="{$thumb_width}"{/if} {if $thumb_height neq 0}height="{$thumb_height}"{/if} border="0" /> </a><br />-->
-                    <!--<input type="text" value="{$img.img_desc|escape}" size="15" name="old_img_desc[{$img.img_id}]" />-->
-                  <!--</div>-->
-                  <!--{/foreach} </td>-->
-              <!--</tr>-->
-
+              {if $form_act eq 'detail'}
+              <tr>
+                <td>
+                  {foreach from=$img_list item=img key=i}
+                  {if $img.type eq 'img'}
+                  <div id="gallery_{$img.id}" style="float:left; text-align:center; border: 1px solid #DADADA; margin: 4px; padding:2px;">
+                    <!--<a href="javascript:;" onclick="if (confirm('{$lang.drop_img_confirm}')) dropImg('{$img.img_id}')">[-]</a><br />-->
+                    <!--<a href="supplier.php?act=show_image&img_url={$img.img_url}" target="_blank">-->
+                    <img src="../{$img.attach_url}" width="64" height="64" border="0" />
+                    <!--</a>-->
+                    <br />
+                    <input type="text" value="{$img.attach_desc|escape}" readonly size="15"  />
+                  </div>
+                  {/if}
+                  {/foreach}
+                </td>
+              </tr>
+              {/if }
+              {if $form_act neq 'detail'}
               <tr>
                 <td><a href="javascript:;" onclick="addImg(this)">[+]</a> 资质图片描述
                   <input type="text" name="img_desc[]" size="20" />
@@ -131,6 +167,7 @@
                   <input type="file" name="img_url[]" accept=".jpg,.jpeg,.gif,.png,.bmp"/>
                 </td>
               </tr>
+              {/if}
             </table>
             </div>
           </td>
@@ -138,7 +175,7 @@
 
         <tr>
           <td class="label">备注</td>
-          <td><textarea  name="remark" >{$obj.remark|escape}</textarea></td>
+          <td><textarea  {$readonly}  name="remark" >{$obj.remark|escape}</textarea></td>
         </tr>
         <tr>
           <td colspan="2"><hr></td>
@@ -155,10 +192,10 @@
                 </thead>
                 <tbody>
                 <tr>
-                  <td><input name="firstPart" value="{$obj.firstPart|escape}"/></td>
-                  <td><input name="freight" value="{$obj.freight|escape}"/></td>
-                  <td><input name="add" value="{$obj.add|escape}"/></td>
-                  <td><input name="addFee" value="{$obj.addFee|escape}"/></td>
+                  <td><input  {$readonly} name="firstPart" value="{$obj.firstPart|escape}"/></td>
+                  <td><input {$readonly}  name="freight" value="{$obj.freight|escape}"/></td>
+                  <td><input  {$readonly} name="addPart" value="{$obj.addPart|escape}"/></td>
+                  <td><input  {$readonly} name="addFee" value="{$obj.addFee|escape}"/></td>
                 </tr>
                 </tbody>
               </table>
@@ -171,7 +208,7 @@
       </table>
 
       <div class="button-div">
-        <input type="button" value="提交审核" class="button" onclick="validate()" />
+        {if $form_act eq 'insert'}<input type="button" value="提交审核" class="button" onclick="validate()" />{/if}
         <input type="hidden" name="" value="" />
       </div>
       <input type="hidden" name="act" value="{$form_act}" />
@@ -208,7 +245,6 @@
   }
   function addProductor(){
       var input = document.createElement('input');
-      input.name = 'manufacturer[]';
       var remove = document.createElement('input');
       remove.type ='button';
       remove.value = '移除';
@@ -253,6 +289,20 @@
   function validate(){
     var orderContactTel = document.getElementById('orderContactTel');
     orderContactTel.value =document.getElementById('tel_region').value +'-'+document.getElementById('tel_main').value +'-'+document.getElementById('tel_part').value ;
+    var productor_div = document.getElementById('productor_div');
+    var inputs=productor_div.getElementsByTagName('input');
+    var val = document.getElementById('manufacturer').value == ''?'':','+document.getElementById('manufacturer').value;
+    for(var key in inputs){
+      if(inputs[key].type == 'text'){
+        if(inputs[key].value != ''){
+          val += ','+inputs[key].value;
+        }
+      }
+    }
+    if(val != ''){
+      val = val.substr(1);
+    }
+    document.getElementById('manufacturer_hidden').value = val;
 
     var form = document.forms['theForm'];
     form.submit();

@@ -65,13 +65,13 @@ function suppliers_list()
 }
 
 function valid_parter(){
-    $sql = "update rbc_parter set valid_state = CASE WHEN valid_state = '可用' then    '停用' WHEN  valid_state = '停用' then  '可用' end where id = {$_REQUEST['id']}";
+    $sql = "update rbc_supplier set valid_state = CASE WHEN valid_state = '可用' then    '停用' WHEN  valid_state = '停用' then  '可用' end where id = {$_REQUEST['id']}";
      $ret = $GLOBALS['db']->query($sql) or make_json_error($GLOBALS['db']->error());
     make_json_result($ret);
 }
 
-function get_parters($id){
-    $sql = "select * from rbc_parter where id = '{$id}'";
+function get_supplier($id){
+    $sql = "select * from rbc_supplier where id = '{$id}'";
     $return_array = $GLOBALS['db']->getRow($sql);
     return $return_array;
 }

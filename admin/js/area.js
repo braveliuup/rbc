@@ -2,7 +2,7 @@
 function createAreaComponent(name, initCallback, genInput){
     var areaComp = {};
     var div = document.getElementById('areaComponent');
-    if(div == null){
+    if(div == null || div.tagName != 'DIV'){
         return;
     }
     var input;

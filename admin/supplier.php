@@ -15,6 +15,8 @@ define('IN_ECS', true);
 require(dirname(__FILE__) . '/includes/init.php');
 require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/cls_pingyin.php');
 require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_supplier.php');
+include_once(ROOT_PATH . '/includes/cls_image.php');
+$image = new cls_image($_CFG['bgcolor']);
 $exc = new exchange('rbc_parter', $db, 'id', 'parter_code');
 if(!empty($_REQUEST['act']) && $_REQUEST['act'] == 'add'){
 //    $fields;
@@ -108,15 +110,20 @@ else if($_REQUEST['act'] == 'valid'){
     valid_parter();
 }
 else if($_REQUEST['act'] == 'detail'){
-    $smarty->assign('ur_here', '合作商详细信息');
-    $action_link = array('href' => 'parter.php?act=list', 'text' => '合作商列表');
+    $smarty->assign('ur_here', '供应商详细信息');
+    $action_link = array('href' => 'supplier.php?act=list', 'text' => '供应商列表');
     $smarty->assign('action_link',  $action_link);
-    $partersInfo = get_parters($_REQUEST['id']);
-    $smarty->assign('rbc_parter', $partersInfo);
+    $obj = get_supplier($_REQUEST['id']);
+    $smarty->assign('obj', $obj);
     $smarty->assign('readonly', 'readonly');
-    $smarty->assign('act', 'detail');
+    $smarty->assign('form_act', 'detail');
 
-    $smarty->display('parters_info.htm');
+    /* 图片列表 */
+    $sql = "SELECT * FROM rbc_supplier_attach WHERE supplier_id = {$_REQUEST['id']}";
+    $img_list = $db->getAll($sql);
+    $smarty->assign('img_list', $img_list);
+
+    $smarty->display('supplier_info.htm');
 }
 else if($_REQUEST['act'] == 'edit'){
     $smarty->assign('ur_here', '修改合作商信息');
@@ -195,6 +202,83 @@ else if($_REQUEST['act'] == 'update'){
 }
 else if($_REQUEST['act'] == 'insert')
 {
+    $fields="";
+    $values="";
+    $errfields = array();
+    foreach($_POST as $key=>$value){
+        if(is_array($value) || $key == 'act'){
+            continue;
+        }
+        if($value == ''){
+            array_push($errfields, $key);
+        }
+        $fields .= $key.',';
+        $values .= '\''.$value.'\''.',';
+    }
+
+    $sql = 'insert into rbc_supplier ('.substr($fields,0,-1).') values ('.substr($values,0,-1).')';
+    $result = $db->query($sql);
+    $last_supplier_id = $db->insert_id();
+
+    $sql = "select user_code from ecs_admin_user where user_id= {$_SESSION['admin_id']}";
+    $user_code = $db->getOne($sql);
+
+    $supplierID = $user_code.$last_supplier_id;
+    $sql = "update rbc_supplier set supplierID = '{$supplierID}' where id = {$last_supplier_id}";
+    $result = $db->query($sql);
+    /*合作协议*/
+    $file_desc_ary = $_POST['file_desc'];
+    $file_ary = $_FILES['file_url'];
+    for($i=0; $i < count($file_desc_ary); $i++){
+        if($file_ary['name'][$i] == '')
+        {
+            continue;
+        }
+
+            $upload = array(
+            'name' => $file_ary['name'][$i],
+            'type' => $file_ary['type'][$i],
+            'tmp_name' => $file_ary['tmp_name'][$i],
+            'size' => $file_ary['size'][$i],
+        );
+        if (isset($file_ary['error']))
+        {
+            $upload['error'] = $file_ary['error'][$i];
+        }
+        $image_origin = $image->upload_image($upload);
+        if($image->error_msg() != ''){
+            sys_msg($image->error_msg(),1);
+        }
+        $sql = "INSERT INTO rbc_supplier_attach (supplier_id, attach_url, attach_desc,type) " .
+            "VALUES ('$last_supplier_id', '$image_origin', '$file_desc_ary[$i]', 'file')";
+        $GLOBALS['db']->query($sql);
+    }
+
+    /*企业资质*/
+    for($i=0; $i < count( $_POST['img_desc']); $i++){
+        if($_FILES['img_url']['name'][$i] == '')
+        {
+            continue;
+        }
+        $upload = array(
+            'name' => $_FILES['img_url']['name'][$i],
+            'type' => $_FILES['img_url']['type'][$i],
+            'tmp_name' => $_FILES['img_url']['tmp_name'][$i],
+            'size' => $_FILES['img_url']['size'][$i],
+        );
+        if (isset($_FILES['img_url']['error']))
+        {
+            $upload['error'] = $_FILES['img_url']['error'][$i];
+        }
+        $image_origin = $image->upload_image($upload);
+        if($image->error_msg() != ''){
+            sys_msg($image->error_msg(),1);
+        }
+        $sql = "INSERT INTO rbc_supplier_attach (supplier_id, attach_url, attach_desc,type) " .
+            "VALUES ('$last_supplier_id', '$image_origin', '".$_POST['img_desc'][$i]."','img')";
+        $GLOBALS['db']->query($sql);
+    }
+
     sys_msg('信息已提交', 0, array(array('href'=>'supplier.php?act=list')));
 }
 ?>

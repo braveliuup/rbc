@@ -26,7 +26,12 @@ if($_REQUEST['act'] == 'province'){
     make_json_result( $row );
 }
 else if($_REQUEST['act'] == 'parse_code'){
-    $ary = explode('#',urldecode($_REQUEST['code']));
+    $ary = array();
+    if(strstr(urldecode($_REQUEST['code']), '#')){
+        $ary = explode('#',urldecode($_REQUEST['code']));
+    }else if(strstr(urldecode($_REQUEST['code']), '-')){
+        $ary = explode('-',urldecode($_REQUEST['code']));
+    }
     $sql = "select group_concat(name separator  ' ') addr from 
       (select province name from rbc_nation where code = '{$ary[0]}' union all select city name from rbc_nation where  code = '{$ary[1]}' union all select district name from rbc_nation where code = '{$ary[2]}') as g
     ";
