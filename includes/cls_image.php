@@ -519,6 +519,19 @@ class cls_image
                $img_type == 'image/jpeg';
     }
 
+    function check_file_type($img_type){
+        return   $img_type == 'application/msword'   ||
+        $img_type == 'application/pdf' ;
+    }
+
+    function check_picture_type($img_type){
+        return $img_type == 'image/pjpeg' ||
+        $img_type == 'image/x-png' ||
+        $img_type == 'image/png'   ||
+        $img_type == 'image/gif'   ||
+        $img_type == 'image/jpeg';
+    }
+
     /**
      * 检查图片处理能力
      *

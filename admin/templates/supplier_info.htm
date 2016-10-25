@@ -98,7 +98,7 @@
         <tr>
           <td class="label">是否签订合作协议</td>
           <td>
-            <input type="radio" {if $form_act eq 'detail'}disabled{/if}  {if $obj.signAgreement eq '是' }checked{/if} name="signAgreement" value="是" onchange="isHasAgreemennt(event);"/>是
+            <input type="radio" {if $form_act eq 'detail'}disabled{/if}  {if $form_act eq 'insert'}checked{/if} {if $obj.signAgreement eq '是' }checked{/if} name="signAgreement" value="是" onchange="isHasAgreemennt(event);"/>是
             <input type="radio"  {if $form_act eq 'detail'}disabled{/if}   {if $obj.signAgreement eq '否' } checked{/if}  name="signAgreement" value="否" onchange="isHasAgreemennt(event);"/>否
             <div id="agreement_div" style="display:{if $obj.signAgreement eq '否' }none;{/if}{if $obj.signAgreement eq '是' }block;{/if}">
               <span>请上传PDF/WORD格式的协议文档</span>

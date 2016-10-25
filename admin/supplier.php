@@ -202,6 +202,49 @@ else if($_REQUEST['act'] == 'update'){
 }
 else if($_REQUEST['act'] == 'insert')
 {
+    //先判断上传的文件是否正确
+    $file_desc_ary = $_POST['file_desc'];
+    $file_ary = $_FILES['file_url'];
+    for($i=0; $i < count($file_desc_ary); $i++){
+        if($file_ary['name'][$i] == '')
+        {
+            continue;
+        }
+        $upload = array(
+            'name' => $file_ary['name'][$i],
+            'type' => $file_ary['type'][$i],
+            'tmp_name' => $file_ary['tmp_name'][$i],
+            'size' => $file_ary['size'][$i],
+        );
+        if(!$image->check_file_type($upload['type'])){
+            sys_msg('合作协议文件格式不正确',1);
+        }
+        if($upload['size'] > 2500000){
+            sys_msg('合作协议文件大小超过最大限制',1);
+        }
+    }
+
+    for($i=0; $i < count( $_POST['img_desc']); $i++){
+        if($_FILES['img_url']['name'][$i] == '')
+        {
+            continue;
+        }
+        $upload = array(
+            'name' => $_FILES['img_url']['name'][$i],
+            'type' => $_FILES['img_url']['type'][$i],
+            'tmp_name' => $_FILES['img_url']['tmp_name'][$i],
+            'size' => $_FILES['img_url']['size'][$i],
+        );
+        if(!$image->check_picture_type($upload['type'])){
+            sys_msg('上传的图片文件格式不正确',1);
+        }
+        if($upload['size'] > 2500000){
+            sys_msg('上传的图片文件大小超过最大限制',1);
+        }
+
+    }
+
+    //  开始插入数据
     $fields="";
     $values="";
     $errfields = array();
