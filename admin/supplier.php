@@ -263,7 +263,7 @@ else if($_REQUEST['act'] == 'insert')
     $result = $db->query($sql);
     $last_supplier_id = $db->insert_id();
 
-    $sql = "select user_code from ecs_admin_user where user_id= {$_SESSION['admin_id']}";
+    $sql = "select user_id from ecs_admin_user where user_id= {$_SESSION['admin_id']}";
     $user_code = $db->getOne($sql);
 
     $supplierID = $user_code.$last_supplier_id;
