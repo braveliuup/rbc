@@ -1,0 +1,145 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+{if $full_page}
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,listtable.js"}
+
+<!-- 合作商搜索 -->
+{include file="parters_search.htm"}
+<input type="button" value="选择显示项目"  class="button" onclick="showFieldList()" />
+
+<style>
+  ul
+  {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+  }
+  ul li
+  {
+  }
+
+  #displayItemComponent{
+    position:absolute;
+    background-color: #f7f7f7;
+    margin-left:8px;
+    padding:0 20px 10px 20px;
+    display:none;
+  }
+
+</style>
+<div  id="displayItemComponent">
+<ul >
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+  <li><input type="checkbox"/>字段 </li>
+</ul>
+  <hr width="100%">
+  <input type="button" value="确定" onclick="initDisplayItem()"/>
+  <input type="button" value="取消" onclick="hideFieldList()"/>
+</div>
+<script>
+  var div =  document.getElementById('displayItemComponent');
+
+  function showFieldList(){
+    alert('未实现');
+    return;
+    div.style.display = 'block';
+  }
+
+  function hideFieldList(){
+    div.style.display = 'none';
+  }
+
+  function initDisplayItem() {
+    hideFieldList();
+  }
+</script>
+{/if}
+
+<!-- 合作商列表 -->
+<form method="post" action="javascript:exportTable()" name="listForm" >
+  <!-- start parter list -->
+  <div class="list-div" id="listDiv">
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th>
+      <input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号
+    </th>
+    <th>合作商编号</a></th>
+    <th>合作商全称</a></th>
+    <th>分成比例</a></th>
+    <th>负责人姓名</a></th>
+    <th>负责人手机</a></th>
+    <th>负责人座机</a></th>
+    <th>审核状态</a></th>
+    <th>可用状态</a></th>
+    <th>操作</th>
+  <tr>
+  {foreach from=$parters_list item=parters}
+  <tr>
+    <td><input type="checkbox" name="checkboxes[]"  value="{$parters.id}"/>{$parters.id}</td>
+    <td><span>{$parters.parter_code}</span></td>
+    <td><span>{$parters.partnersName}</span></td>
+    <td><span>{$parters.parter_share_percent}</span></td>
+    <td><span>{$parters.leaderName}</span></td>
+    <td><span>{$parters.leaderPhone}</span></td>
+    <td><span>{$parters.leaderTel}</span></td>
+    <td><span>{$parters.check_state}</span></td>
+    <td><span>{$parters.valid_state}</span></td>
+    <td align="center">
+      <a href="parter.php?act=detail&id={$parters.id}">详细</a>
+      <a href="parter.php?act=edit&id={$parters.id}" >修改</a>
+      <a href="javascript:validParter({$parters.id})" >启用/停用</a>
+      <!--<a href="#parter.php?act=point_shop&id={$parters.id}">查看积分商城</a>-->
+    </td>
+  </tr>
+  {foreachelse}
+  <tr><td class="no-records" colspan="10">{$lang.no_records}</td></tr>
+  {/foreach}
+</table>
+<!-- end parter list -->
+
+<!-- 分页 -->
+<table id="page-table" cellspacing="0">
+  <tr>
+    <td align="right" nowrap="true">
+    {include file="page.htm"}
+    </td>
+  </tr>
+</table>
+
+  <input type="submit" value="选择导出" id="btnSubmit" name="btnSubmit" class="button"  />
+</div>
+</form>
+
+<script type="text/javascript">
+  function exportTable(){
+    alert("导出列表数据，未实现");
+  }
+
+  listTable.recordCount = {$record_count};
+  listTable.pageCount = {$page_count};
+
+  {foreach from=$filter item=item key=key}
+  listTable.filter.{$key} = '{$item}';
+  {/foreach}
+
+  function validParter(id){
+    function callback(result){
+      console.log(result)
+      listTable.loadList();
+    }
+   Ajax.call('parter.php?act=valid', "id="+id, callback, "POST", "JSON");
+  }
+</script>
+{if $full_page}
+{include file="pagefooter.htm"}
+{/if}
