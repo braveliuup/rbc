@@ -92,6 +92,21 @@ elseif($_REQUEST['act'] == 'parter_info')
     $smarty->assign('readonly', 'readonly');
     $smarty->display('parter\rbc_parter_info.htm');
 }
+else if($_REQUEST['act'] == 'rbc_parter_user_list')
+{
+    /* pageheader 赋值*/
+    $smarty->assign('ur_here', '用户信息管理');
+
+
+    /* 列表赋值*/
+    $list = parter_user_list($_SESSION['admin_id']);
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 1);
+    $smarty->display('parter\rbc_parter_user_list.htm');
+}
 else if($_REQUEST['act'] == 'rbc_parter_emp_list')
 {
     /* pageheader 赋值*/

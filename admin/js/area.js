@@ -1,10 +1,21 @@
 // js创建行政区划选择组件
-function createAreaComponent(name, initCallback){
+function createAreaComponent(name, initCallback, genInput){
     var areaComp = {};
     var div = document.getElementById('areaComponent');
     if(div == null){
         return;
     }
+    var input;
+    var pcode = "";
+    var ccode = "";
+    var rcode = "";
+    if(genInput){
+        input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name.substr(0, name.indexOf('['));
+        div.appendChild(input);
+    }
+
     var province = document.createElement("select");
     var city = document.createElement("select");
     var region = document.createElement("select");
@@ -14,7 +25,9 @@ function createAreaComponent(name, initCallback){
     areaComp.initCallback = initCallback;
     areaComp.initCity = initCity;
     areaComp.initRegion = initRegion;
-    province.name= city.name = region.name = name;
+    if(!genInput){
+        province.name= city.name = region.name = name;
+    }
     province.style.marginRight = city.style.marginRight = 6;
     createOption('', '请选择', province);
     createOption('', '请选择', city);
@@ -25,10 +38,19 @@ function createAreaComponent(name, initCallback){
     province.addEventListener("change", function(target){
         var code =   target.target.options[target.target.selectedIndex].value;
         initCity(code);
+        pcode = code;
     });
     city.addEventListener("change", function(target){
         var code =   target.target.options[target.target.selectedIndex].value;
         initRegion(code);
+        ccode = code;
+    });
+    region.addEventListener("change", function(target){
+        var code =   target.target.options[target.target.selectedIndex].value;
+        rcode = code;
+        if(input){
+            input.value = pcode+'-'+ccode+'-'+rcode;
+        }
     });
 
     function createOption(value, name, parent, defaultSelected){
@@ -56,7 +78,7 @@ function createAreaComponent(name, initCallback){
     }
     function initProvince(result, select_item){
         initSelect(result, province, select_item);
-        if(areaComp.initCallback){
+        if(areaComp.initCallback && typeof(areaComp.initCallback) == 'function'){
             areaComp.initCallback();
         }
     }
@@ -104,12 +126,18 @@ function setSelectChecked(selele, checkValue){
 };
 
 onload=function(){
-    if(typeof(initAreaComp) != 'undefined'){
-        areaCom = createAreaComponent('partnersAddress[]', initAreaComp);
-    }else{
-        areaCom = createAreaComponent('partnersAddress[]');
+
+    var data = document.getElementById('areaComponent').getAttribute('data');
+    var genInput = document.getElementById('areaComponent').getAttribute('gen-input');
+    if(data == null){
+        data = 'partnersAddress';
     }
-    createAreaTextInput('partnersAddress');
+    if(typeof(initAreaComp) != 'undefined'){
+        areaCom = createAreaComponent(data+'[]', initAreaComp, genInput);
+    }else{
+        areaCom = createAreaComponent(data+'[]', null, genInput);
+    }
+    createAreaTextInput(data);
 }
 
 

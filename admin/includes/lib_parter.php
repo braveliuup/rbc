@@ -189,7 +189,7 @@ function parters_list()
     }
     if (!empty($filter['valid_state']))
     {
-        $where .= " AND (valid_state = '".$filter['check_state']."'')";
+        $where .= " AND (valid_state = '".$filter['valid_state']."'')";
     }
     /* 记录总数 */
     $sql = "SELECT COUNT(*) FROM rbc_parter AS g ".$where;
@@ -250,6 +250,21 @@ function get_parter_emp($id){
     $sql = "select * from rbc_parter_staff_info where id = {$id}";
     $row = $GLOBALS['db']->getRow($sql);
     return $row;
+}
+
+function parter_user_list($parter_id)
+{
+    $where = ' where 1 = 1 ';
+    /* 记录总数 */
+    $sql = "SELECT COUNT(*) FROM ecs_users AS g ".$where;
+    $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+    /* 分页大小 */
+    $filter = page_and_size($filter);
+    $sql = "select * from ecs_users " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+
+    $row = $GLOBALS['db']->getAll($sql);
+
+    return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
 }
 function move_image_file($source, $dest)
 {

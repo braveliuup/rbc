@@ -13,88 +13,95 @@
 
 define('IN_ECS', true);
 require(dirname(__FILE__) . '/includes/init.php');
-require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_parter.php');
 require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/cls_pingyin.php');
+require_once(ROOT_PATH . '/' . ADMIN_PATH . '/includes/lib_supplier.php');
 $exc = new exchange('rbc_parter', $db, 'id', 'parter_code');
-if(!empty($_REQUEST['act']) && $_REQUEST['act'] == 'register'){
-    $fields;
-    $values;
-    $errfields = array();
-    $v =0;
-    foreach($_POST as $key=>$value){
-        if($v != 0){
-            $fields .= ',';
-            $values .=',';
-        }
-        if(is_array($value)){
-            foreach($value as $k=>$val){
-                if($val == ''){
-                    array_push($errfields, $key);
-                    break;
-                }
-            }
-            $value = implode('#', $value);
-        }
-        if($value == ''){
-            array_push($errfields, $key);
-        }
-        $fields .= $key;
-        $values .= '\''.$value.'\'';
-        $v = 1;
-    }
-    if(count($errfields) > 0 ){
-        $sql = "SELECT COLUMN_NAME,  COLUMN_COMMENT FROM information_schema.columns WHERE table_name = 'rbc_parter'";
-        $row = $GLOBALS['db']->getAll($sql);
-        $ary = array();
-        foreach($row as $key => $value){
-            $ary[$value['COLUMN_NAME']] = $value['COLUMN_COMMENT'];
-        }
-        foreach($errfields as $key=>$value){
-            echo '['.$ary[$value].']'."不能为空";
-            echo '<br>';
-        }
-       echo "<br><a href='rbc_parter_register.htm' style='font-size:24px;'>回到注册页面</a>";
-    }else{
-        $sql = 'insert into rbc_parter ('.$fields.') values ('.$values.')';
-        $result = $GLOBALS['db']->query($sql);
-        if($result){
-            echo '<h1>注册信息已经提交到后台，账号目前为【待审核】状态。</h1><br><a href="parterAdmin.php" style="font-size:24px;">点击进入合作商后台登录页面</a>';
-        }else{
-            print_r($result);
-        }
-    }
+if(!empty($_REQUEST['act']) && $_REQUEST['act'] == 'add'){
+//    $fields;
+//    $values;
+//    $errfields = array();
+//    $v =0;
+//    foreach($_POST as $key=>$value){
+//        if($v != 0){
+//            $fields .= ',';
+//            $values .=',';
+//        }
+//        if(is_array($value)){
+//            foreach($value as $k=>$val){
+//                if($val == ''){
+//                    array_push($errfields, $key);
+//                    break;
+//                }
+//            }
+//            $value = implode('#', $value);
+//        }
+//        if($value == ''){
+//            array_push($errfields, $key);
+//        }
+//        $fields .= $key;
+//        $values .= '\''.$value.'\'';
+//        $v = 1;
+//    }
+//    if(count($errfields) > 0 ){
+//        $sql = "SELECT COLUMN_NAME,  COLUMN_COMMENT FROM information_schema.columns WHERE table_name = 'rbc_parter'";
+//        $row = $GLOBALS['db']->getAll($sql);
+//        $ary = array();
+//        foreach($row as $key => $value){
+//            $ary[$value['COLUMN_NAME']] = $value['COLUMN_COMMENT'];
+//        }
+//        foreach($errfields as $key=>$value){
+//            echo '['.$ary[$value].']'."不能为空";
+//            echo '<br>';
+//        }
+//       echo "<br><a href='rbc_parter_register.htm' style='font-size:24px;'>回到注册页面</a>";
+//    }else{
+//        $sql = 'insert into rbc_parter ('.$fields.') values ('.$values.')';
+//        $result = $GLOBALS['db']->query($sql);
+//        if($result){
+//            echo '<h1>注册信息已经提交到后台，账号目前为【待审核】状态。</h1><br><a href="parterAdmin.php" style="font-size:24px;">点击进入合作商后台登录页面</a>';
+//        }else{
+//            print_r($result);
+//        }
+//    }
 
+    $smarty->assign('ur_here', '添加供应商');
+    $action_link = array('href' => 'supplier.php?act=list',  'text' => '供应商列表');
+    $smarty->assign('action_link',  $action_link);
+    $smarty->assign('form_act',  'insert');
+
+    $smarty->display('supplier_info.htm');
 
 }
 else if($_REQUEST['act'] == 'list') {
 
     /* pageheader 赋值*/
-    $smarty->assign('ur_here', $_LANG['parter_list']);
-    $action_link = array('href' => 'rbc_parter_register.htm', 'target'=>'_blank', 'text' => '生成合作商注册链接');
+    $smarty->assign('ur_here', '供应商列表');
+    $action_link = array('href' => 'supplier.php?act=add',  'text' => '添加供应商');
     $smarty->assign('action_link',  $action_link);
 
     /* 列表赋值*/
-    $parters_list = parters_list();
-    $smarty->assign('parters_list',   $parters_list['parters']);
-    $smarty->assign('filter', $parters_list['filter']);
-    $smarty->assign('record_count', $parters_list['record_count']);
-    $smarty->assign('page_count',   $parters_list['page_count']);
+    $list = suppliers_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
     $smarty->assign('full_page', 1);
 
     /* 查询性能监控 */
     assign_query_info();
-    $smarty->display('parter_list.htm');
+    $smarty->display('supplier_list.htm');
 }
 else if($_REQUEST['act'] == 'query'){
-    $parters_list = parters_list();
-    $smarty->assign('parters_list',   $parters_list['parters']);
-    $smarty->assign('filter', $parters_list['filter']);
-    $smarty->assign('record_count', $parters_list['record_count']);
-    $smarty->assign('page_count',   $parters_list['page_count']);
+    /* 列表赋值*/
+    $list = suppliers_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
     $smarty->assign('full_page', 0);
-    assign_query_info();
-    make_json_result($smarty->fetch('parter_list.htm'),'',
-        array('filter' => $parters_list['filter'], 'page_count' => $parters_list['page_count']));
+
+    make_json_result($smarty->fetch('supplier_list.htm'),'',
+        array('filter' => $list['filter'], 'page_count' => $list['page_count']));
 
 }
 else if($_REQUEST['act'] == 'valid'){
@@ -185,5 +192,9 @@ else if($_REQUEST['act'] == 'update'){
     }else{
         sys_msg('数据更新失败', 1);
     }
+}
+else if($_REQUEST['act'] == 'insert')
+{
+    sys_msg('信息已提交', 0, array(array('href'=>'supplier.php?act=list')));
 }
 ?>

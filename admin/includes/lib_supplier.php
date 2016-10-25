@@ -12,142 +12,15 @@ if (!defined('IN_ECS'))
 }
 
 
-function parters_list()
+function suppliers_list()
 {
-    /* 过滤条件 */
-//    $param_str = '-' . $is_delete . '-' . $real_goods;
-//    $result = get_filter($param_str);
-//    if ($result === false)
-//    {
-//        $day = getdate();
-//        $today = local_mktime(23, 59, 59, $day['mon'], $day['mday'], $day['year']);
-//
-//        $filter['cat_id']           = empty($_REQUEST['cat_id']) ? 0 : intval($_REQUEST['cat_id']);
-//        $filter['seller_id']           = empty($_REQUEST['seller_id']) ? 0 : intval($_REQUEST['seller_id']);//by wang 商家入住
-//        $filter['intro_type']       = empty($_REQUEST['intro_type']) ? '' : trim($_REQUEST['intro_type']);
-//        $filter['is_promote']       = empty($_REQUEST['is_promote']) ? 0 : intval($_REQUEST['is_promote']);
-//        $filter['stock_warning']    = empty($_REQUEST['stock_warning']) ? 0 : intval($_REQUEST['stock_warning']);
-//        $filter['brand_id']         = empty($_REQUEST['brand_id']) ? 0 : intval($_REQUEST['brand_id']);
-//        $filter['keyword']          = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
-//        $filter['suppliers_id'] = isset($_REQUEST['suppliers_id']) ? (empty($_REQUEST['suppliers_id']) ? '' : trim($_REQUEST['suppliers_id'])) : '';
-//        $filter['is_on_sale'] = isset($_REQUEST['is_on_sale']) ? ((empty($_REQUEST['is_on_sale']) && $_REQUEST['is_on_sale'] === 0) ? '' : trim($_REQUEST['is_on_sale'])) : '';
-//        if (isset($_REQUEST['is_ajax']) && $_REQUEST['is_ajax'] == 1)
-//        {
-//            $filter['keyword'] = json_str_iconv($filter['keyword']);
-//        }
-//        $filter['sort_by']          = empty($_REQUEST['sort_by']) ? 'goods_id' : trim($_REQUEST['sort_by']);
-//        $filter['sort_order']       = empty($_REQUEST['sort_order']) ? 'DESC' : trim($_REQUEST['sort_order']);
-//        $filter['extension_code']   = empty($_REQUEST['extension_code']) ? '' : trim($_REQUEST['extension_code']);
-//        $filter['is_delete']        = $is_delete;
-//        $filter['real_goods']       = $real_goods;
-//
-//        $where = $filter['cat_id'] > 0 ? " AND " . get_children($filter['cat_id']) : '';
-//
-//        /*wang 商家入驻*/
-//        if(isset($_REQUEST['status'])&&intval($_REQUEST['status'])<3)
-//        {
-//            $where .=" and check_status=".intval($_REQUEST['status']);
-//        }
-//
-//        if(isset($_REQUEST['seller_id'])&&intval($_REQUEST['seller_id'])<3)
-//        {
-//            $filter['seller_id']           = empty($_REQUEST['seller_id']) ? 0 : intval($_REQUEST['seller_id']);//by wang 商家入住
-//            if(intval($_REQUEST['seller_id'])>0)
-//            {
-//                $where .=" and seller_id>0 ";
-//            }
-//            else
-//            {
-//                $where .=" and seller_id=0";
-//            }
-//        }
-//        /*wang 商家入驻*/
-//
-//        /* 推荐类型 */
-//        switch ($filter['intro_type'])
-//        {
-//            case 'is_best':
-//                $where .= " AND is_best=1";
-//                break;
-//            case 'is_hot':
-//                $where .= ' AND is_hot=1';
-//                break;
-//            case 'is_new':
-//                $where .= ' AND is_new=1';
-//                break;
-//            case 'is_promote':
-//                $where .= " AND is_promote = 1 AND promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today'";
-//                break;
-//            case 'all_type';
-//                $where .= " AND (is_best=1 OR is_hot=1 OR is_new=1 OR (is_promote = 1 AND promote_price > 0 AND promote_start_date <= '" . $today . "' AND promote_end_date >= '" . $today . "'))";
-//        }
-//
-//        /* 库存警告 */
-//        if ($filter['stock_warning'])
-//        {
-//            $where .= ' AND goods_number <= warn_number ';
-//        }
-//
-//        /* 品牌 */
-//        if ($filter['brand_id'])
-//        {
-//            $where .= " AND brand_id='$filter[brand_id]'";
-//        }
-//
-//        /* 扩展 */
-//        if ($filter['extension_code'])
-//        {
-//            $where .= " AND extension_code='$filter[extension_code]'";
-//        }
-//
-
-//
-//        if ($real_goods > -1)
-//        {
-//            $where .= " AND is_real='$real_goods'";
-//        }
-//
-//        /* 上架 */
-//        if ($filter['is_on_sale'] !== '')
-//        {
-//            $where .= " AND (is_on_sale = '" . $filter['is_on_sale'] . "')";
-//        }
-//
-//        /* 供货商 */
-//        if (!empty($filter['suppliers_id']))
-//        {
-//            $where .= " AND (suppliers_id = '" . $filter['suppliers_id'] . "')";
-//        }
-//
-//        $where .= $conditions;
-
-//        /* 记录总数 */
-//        $sql = "SELECT COUNT(*) FROM rbc_parter AS g ";
-//        $filter['record_count'] = $GLOBALS['db']->getOne($sql);
-//
-//        /* 分页大小 */
-//        $filter = page_and_size($filter);
-//
-//        $sql = "SELECT goods_id, goods_name, goods_type, goods_sn, shop_price, is_on_sale, is_best, is_new, is_hot, sort_order, goods_number, integral,check_status,check_cause, " .
-//            " (promote_price > 0 AND promote_start_date <= '$today' AND promote_end_date >= '$today') AS is_promote ".
-//            " FROM " . $GLOBALS['ecs']->table('goods') . " AS g WHERE is_delete='$is_delete' $where" .
-//            " ORDER BY $filter[sort_by] $filter[sort_order] ".
-//            " LIMIT " . $filter['start'] . ",$filter[page_size]";
-//
-//        $filter['keyword'] = stripslashes($filter['keyword']);
-//        set_filter($filter, $sql, $param_str);
-//    }
-//    else
-//    {
-//        $sql    = $result['sql'];
-//        $filter = $result['filter'];
-//    }
     $where = " where 1=1 ";
     $filter['keyword']          = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
     $filter['partnersAddress']          = empty($_REQUEST['partnersAddress']) ? '' : trim($_REQUEST['partnersAddress']);
     $filter['check_state']          = empty($_REQUEST['check_state']) ? '' : trim($_REQUEST['check_state']);
-    $filter['check_man_keyword']          = empty($_REQUEST['check_man_keyword']) ? '' : trim($_REQUEST['check_man_keyword']);
-    $filter['parter_share_percent']          = empty($_REQUEST['parter_share_percent']) ? '' : trim($_REQUEST['parter_share_percent']);
+    $filter['signAgreement']          = empty($_REQUEST['signAgreement']) ? '' : trim($_REQUEST['signAgreement']);
+    $filter['operator_keyword']          = empty($_REQUEST['operator_keyword']) ? '' : trim($_REQUEST['operator_keyword']);
+    $filter['auditor_keyword']          = empty($_REQUEST['auditor_keyword']) ? '' : trim($_REQUEST['auditor_keyword']);
     $filter['valid_state']          = empty($_REQUEST['valid_state']) ? '' : trim($_REQUEST['valid_state']);
 
     /* 关键字 */
@@ -157,50 +30,38 @@ function parters_list()
     }
     if (!empty($filter['partnersAddress']))
     {
-//        $tempary = explode('#',$filter['partnersAddress']);
-//        $tempfilter = "";
-//        for($i = 0 ; $i < count($tempary) ; $i++){
-//
-//            if($i == 0){
-//                $tempfilter .= ' and (';
-//            }
-//            if($i != 0 ){
-//                $tempfilter .= ' or ';
-//            }
-//            $tempfilter .=" partnersAddress LIKE '%" . ($tempary[$i]) . "%' ";
-//            if($i == count($tempary) - 1){
-//                $tempfilter .= ')';
-//            }
-//        }
-//        $where .= $tempfilter;
         $where .= " AND (partnersAddress LIKE '%" . mysql_like_quote($filter['partnersAddress']) . "%')";
     }
     if (!empty($filter['check_state']))
     {
         $where .= " AND (check_state ='".$filter['check_state']."')";
     }
-    if (!empty($filter['check_man_keyword']))
+    if (!empty($filter['operator_keyword']))
     {
-        $where .= " AND (check_man LIKE '%" . mysql_like_quote($filter['check_man_keyword']) . "%' OR check_man_code LIKE '%" . mysql_like_quote($filter['check_man_keyword']) . "%')";
+        $where .= " AND (operator LIKE '%" . mysql_like_quote($filter['operator_keyword']) . "%' OR operator_name LIKE '%" . mysql_like_quote($filter['operator_keyword']) . "%')";
     }
-    if (!empty($filter['parter_share_percent']))
+    if (!empty($filter['auditor_keyword']))
     {
-        $where .= " AND (parter_share_percent = '".$filter['parter_share_percent']."'')";
+        $where .= " AND (auditor LIKE '%" . mysql_like_quote($filter['auditor_keyword']) . "%' OR auditor_name LIKE '%" . mysql_like_quote($filter['auditor_keyword']) . "%')";
+    }
+    if (!empty($filter['signAgreement']))
+    {
+        $where .= " AND (signAgreement = '".$filter['signAgreement']."'')";
     }
     if (!empty($filter['valid_state']))
     {
-        $where .= " AND (valid_state = '".$filter['check_state']."'')";
+        $where .= " AND (valid_state = '".$filter['valid_state']."'')";
     }
     /* 记录总数 */
-    $sql = "SELECT COUNT(*) FROM rbc_parter AS g ".$where;
+    $sql = "SELECT COUNT(*) FROM rbc_supplier AS g ".$where;
     $filter['record_count'] = $GLOBALS['db']->getOne($sql);
     /* 分页大小 */
     $filter = page_and_size($filter);
-    $sql = "select * from rbc_parter " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+    $sql = "select * from rbc_supplier " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
 
     $row = $GLOBALS['db']->getAll($sql);
 
-    return array('parters' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
+    return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
 }
 
 function valid_parter(){
