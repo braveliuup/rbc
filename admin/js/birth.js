@@ -9,7 +9,7 @@ window.addEventListener('load', function(){
         var yearSelect = document.createElement('select');
         var monthSelect = document.createElement('select');
         var daySelect = document.createElement('select');
-        var birth = {};
+        var birth = {y:'',m:'',d:''};
         obj.birth = birth;
         obj.init = function(str){
             if(str){
@@ -21,9 +21,27 @@ window.addEventListener('load', function(){
             }
 
             if(obj['input']){
-                if(birth['y'] && birth['m'] && birth['d']){
-                    obj['input'].value = birth['y']+'-'+birth['m']+'-'+birth['d'];
+                if(birth['y'] == '' && birth['m']== '' && birth['d']== ''){
+                    obj['input'].value = '';
+
+                }else{
+                    if(birth['y']){
+                        obj['input'].value = birth['y'];
+                    }else{
+                        obj['input'].value = '%';
+                    }
+                    if(birth['m']){
+                        obj['input'].value = obj['input'].value + '-'+birth['m'];
+                    }else{
+                        obj['input'].value = obj['input'].value + '-'+'%';
+                    }
+                    if(birth['d']){
+                        obj['input'].value = obj['input'].value + '-'+birth['d'];
+                    }else{
+                        obj['input'].value = obj['input'].value + '-'+'%';
+                    }
                 }
+
             }
         }
         if(div.getAttribute('post-name')){

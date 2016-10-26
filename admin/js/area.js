@@ -25,6 +25,22 @@ function createAreaComponent(name, initCallback, genInput){
     areaComp.initCallback = initCallback;
     areaComp.initCity = initCity;
     areaComp.initRegion = initRegion;
+    areaComp.init = function(){
+        if(input){
+            input.value = '';
+            pcode =  province.options[province.selectedIndex].value;
+            ccode =  city.options[city.selectedIndex].value;
+            rcode =  region.options[region.selectedIndex].value;
+            if(pcode != ''){
+                input.value = input.value + pcode ;
+            }else if(ccode != ''){
+                input.value = input.value+'-'+  ccode ;
+            }else if(rcode != ''){
+                input.value = input.value +  '-'+rcode ;
+            }
+
+        }
+    }
     if(!genInput){
         province.name= city.name = region.name = name;
     }
@@ -91,6 +107,7 @@ function createAreaComponent(name, initCallback, genInput){
     function initCity(code, select_item){
         clearSelect(city);
         clearSelect(region);
+        ccode = '';
         Ajax.call('area.php?act=city', "code="+code, function(result){
             initSelect(result, city, select_item);
         }, "GET", "JSON");
@@ -98,6 +115,7 @@ function createAreaComponent(name, initCallback, genInput){
 
     function initRegion(code, select_item){
         clearSelect(region);
+        rcode = '';
         Ajax.call('area.php?act=region', "code="+code, function(result){
             initSelect(result, region, select_item);
         }, "GET", "JSON");

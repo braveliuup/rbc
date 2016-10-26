@@ -254,7 +254,25 @@ function get_parter_emp($id){
 
 function parter_user_list($parter_id)
 {
-    $where = ' where 1 = 1 ';
+    $where = " where 1 = 1 and parter_emp_id in (select id from rbc_parter_staff_info where parter_id  = '{$parter_id}') ";
+    foreach($_POST as $k=>$v){
+        if(substr($k,0,7) != 'kfilter')
+            continue;
+        if($v == '')
+            continue;
+        $ary = explode('-', substr($k,7));
+        $where .= ' and (';
+        $temps='';
+        foreach($ary as $idx=>$field){
+            if($idx == 0){
+                $temps .= $field." LIKE '%" . mysql_like_quote($v) . "%'";
+            }else{
+                $temps .= " OR ".$field." LIKE '%" .stripslashes( mysql_like_quote($v)) . "%'" ;
+            }
+        }
+        $where .= $temps .' ) ';
+    }
+    $where = stripslashes($where);
     /* 记录总数 */
     $sql = "SELECT COUNT(*) FROM ecs_users AS g ".$where;
     $filter['record_count'] = $GLOBALS['db']->getOne($sql);
