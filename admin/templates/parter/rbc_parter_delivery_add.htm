@@ -1,0 +1,43 @@
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
+<div style="height: 30px;width:100%;background-color: #f3f8fe">收货地址</div>
+<div>
+	<table>
+		<tr>
+			<td colspan="2"><span style="color:red">新增收货地址</span>&nbsp;&nbsp;电话号码、手机号选填一项，其余均为必填项</td>
+		</tr>
+		<tr>
+			<td>所在地区<span style="color:red">*</span></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>详细地址<span style="color:red">*</span></td>
+			<td><textarea placeholder="建议您如实填写详细收获地址，例如街道名称，门牌号码，楼层和房间号等信息"></textarea></td>
+		</tr>
+		<tr>
+			<td>邮政编码</td>
+			<td><input placeholder="如您不清楚邮政区号，请填写000000"/></td>
+		</tr>
+		<tr>
+			<td>收货人姓名<span style="color:red">*</span></td>
+			<td><input placeholder="长度不超过25个字符"></input></td>
+		</tr>
+		<tr>
+			<td>手机号码</td>
+			<td><input placeholder="电话号码、手机号必须填一项"></input></td>
+		</tr>
+		<tr>
+			<td>电话号码</td>
+			<td><input placeholder="区号"/>-<input placeholder="电话号码"/>-<input placeholder="分机"/></td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="checkbox" />设置为默认收货地址</td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="button" class="button" value="保存"> </td>
+		</tr>
+	</table>
+	<hr>
+	<span style="color:red">已保存了{$count}条地址，最多保存20条地址</span>
+	<table></table>
+</div>

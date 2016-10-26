@@ -116,6 +116,10 @@ else if($_REQUEST['act'] == 'query_user')
     make_json_result($smarty->fetch('parter\rbc_parter_user_list.htm'),'',
         array('filter' => $list['filter'], 'page_count' => $list['page_count']));
 }
+else if($_REQUEST['act'] == 'delivery_address')
+{
+    $smarty->display('parter\rbc_parter_delivery_add.htm');
+}
 else if($_REQUEST['act'] == 'rbc_parter_emp_list')
 {
     /* pageheader 赋值*/
