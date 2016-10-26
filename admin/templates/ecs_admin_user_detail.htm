@@ -1,0 +1,89 @@
+
+				{include file="pageheader.htm"}
+				 <div id="tabbody-div">
+				<form enctype="multipart/form-data" action="ecs_admin_user.php?act=insert" method="post" name="theForm">
+				<table align="center">
+				<tr >
+				<td>员工登录名:</td>
+				<td><input disabled  value='{$ecs_admin_user.user_name}'/></td>
+			</tr><tr >
+				<td>密码:</td>
+				<td><input disabled  value='{$ecs_admin_user.password}'/></td>
+			</tr><tr >
+				<td>员工姓名:</td>
+				<td><input disabled  value='{$ecs_admin_user.name}'/></td>
+			</tr><tr >
+				<td>员工照片:</td>
+				<td><img width='64px' height='64px' src='../{$ecs_admin_user.photo}'/></td>
+			</tr><tr >
+				<td>性别:</td>
+				<td><input disabled  value='{$ecs_admin_user.sex}'/></td>
+			</tr><tr >
+				<td>身份证号:</td>
+				<td><input disabled  value='{$ecs_admin_user.idcard}'/></td>
+			</tr><tr >
+				<td>出生日期:</td>
+				<td><input disabled  value='{$ecs_admin_user.birth}'/></td>
+			</tr><tr >
+				<td>学历:</td>
+				<td><input disabled  value='{$ecs_admin_user.education}'/></td>
+			</tr><tr >
+				<td>部门:</td>
+				<td><input disabled  value='{$ecs_admin_user.depart_id}'/></td>
+			</tr><tr >
+				<td>职责:</td>
+				<td><input disabled  value='{$ecs_admin_user.emp_title}'/></td>
+			</tr><tr >
+				<td>办公电话:</td>
+				<td><input disabled  value='{$ecs_admin_user.tel}'/></td>
+			</tr><tr >
+				<td>手机号:</td>
+				<td><input disabled  value='{$ecs_admin_user.mobile}'/></td>
+			</tr><tr >
+				<td>办公Email:</td>
+				<td><input disabled  value='{$ecs_admin_user.office_email}'/></td>
+			</tr><tr >
+				<td>办公QQ:</td>
+				<td><input disabled  value='{$ecs_admin_user.qq}'/></td>
+			</tr><tr >
+				<td>状态:</td>
+				<td><input disabled  value='{$ecs_admin_user.state}'/></td>
+			</tr><tr >
+				<td>住址:</td>
+				<td><input disabled id='areaComponent' data='areaComponent' value='{$ecs_admin_user.address}'/><script src='js/area.js'></script></td>
+			</tr><tr >
+				<td>详细地址:</td>
+				<td><input disabled  value='{$ecs_admin_user.detail_address}'/></td>
+			</tr><tr >
+				<td>紧急联系人姓名:</td>
+				<td><input disabled  value='{$ecs_admin_user.first_contact_man}'/></td>
+			</tr><tr >
+				<td>紧急联系人关系:</td>
+				<td><input disabled  value='{$ecs_admin_user.first_contact_relation}'/></td>
+			</tr><tr >
+				<td>备用联系人手机号:</td>
+				<td><input disabled  value='{$ecs_admin_user.second_contact_mobile}'/></td>
+			</tr>
+				</table>
+				<div class="button-div">
+			     </div>
+				</form>
+				</div>
+			<script>
+				function validate(){
+					// 生日
+					if(birthCom){
+						birthCom.init();
+					}
+					// 电话
+					if(document.getElementById("tel_div")){
+						var tel_div = document.getElementById("tel_div");
+					    tel_div.children[0].value = tel_div.children[1].value+"-"+tel_div.children[2].value+"-"+tel_div.children[3].value;
+					}
+
+					var form = document.forms["theForm"];
+					form.submit();
+				}
+			</script>
+			{include file="pagefooter.htm"}
+			

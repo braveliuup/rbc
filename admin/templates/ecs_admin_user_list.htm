@@ -1,0 +1,54 @@
+{if $full_page}
+				{include file="pageheader.htm"}
+				{insert_scripts files="../js/utils.js,listtable.js"}
+				<div class="form-div">
+			  <form action="javascript:searchParters()" name="searchForm">
+				<img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" /><span>查询：</span><input name="user_id-user_name-name-mobile" placeholder="员工编号/员工登录名/员工姓名/手机号"/><span>性别：</span><select name="sex"><option value="">请选择</option><option value="男">男</option><option value="女">女</option></select><span>出生日期：</span><div style="display:inline" id="birthComponent" post-name="birth"></div><script src="js/birth.js"></script><span>学历：</span><select name="education"><option value="">请选择</option><option value="初中">初中</option><option value="高中">高中</option><option value="大学专科">大学专科</option><option value="大学本科">大学本科</option><option value="硕士">硕士</option><option value="博士">博士</option></select><span>部门：</span><select name="depart_id"><option value="">请选择</option><option value="市场部">市场部</option><option value="法务部">法务部</option><option value="财务部">财务部</option><option value="文案部">文案部</option><option value="运维部">运维部</option></select><span>状态：</span><select name="state"><option value="">请选择</option><option value="试用">试用</option><option value="正式">正式</option><option value="离职">离职</option></select><span>住址：</span><div style="display:inline" id="areaComponent" data="address" gen-input="true"></div><script src="js/area.js"></script>  <input type="submit" value="搜索" class="button" />
+		  </form>
+		</div>
+		<script language="JavaScript">
+		  function searchParters()
+		  {listTable.filter["kfilteruser_id-user_name-name-mobile"] = Utils.trim(document.forms["searchForm"].elements["user_id-user_name-name-mobile"].value);listTable.filter["kfiltersex"] = Utils.trim(document.forms["searchForm"].elements["sex"].value);listTable.filter["kfilterbirth"] = Utils.trim(document.forms["searchForm"].elements["birth"].value);listTable.filter["kfiltereducation"] = Utils.trim(document.forms["searchForm"].elements["education"].value);listTable.filter["kfilterdepart_id"] = Utils.trim(document.forms["searchForm"].elements["depart_id"].value);listTable.filter["kfilterstate"] = Utils.trim(document.forms["searchForm"].elements["state"].value);listTable.filter["kfilteraddress"] = Utils.trim(document.forms["searchForm"].elements["address"].value);listTable.filter["page"] = 1;
+			listTable.loadList();
+		  }
+		</script>
+		{/if}
+		<form method="post" action="javascript:exportTable()" name="listForm" >
+		  <div class="list-div" id="listDiv">
+		<table cellpadding="3" cellspacing="1">
+		<tr>
+		<th><input onclick="listTable.selectAll(this, 'checkboxes')" type="checkbox"  />员工编号</th><th>员工登录名</th><th>员工姓名</th><th>性别</th><th>出生日期</th><th>学历</th><th>部门</th><th>办公电话</th><th>手机号</th><th>办公Email</th><th>办公QQ</th><th>状态</th> <th>操作</th></tr>
+		  {foreach from=$ecs_admin_user_list item=obj}
+		  <tr><td><input name="checkboxes[]"   type="checkbox" value="{$obj.user_id}" /><span>{$obj.user_id}</span></td><td><span>{$obj.user_name}</span></td><td><span>{$obj.name}</span></td><td><span>{$obj.sex}</span></td><td><span>{$obj.birth}</span></td><td><span>{$obj.education}</span></td><td><span>{$obj.depart_id}</span></td><td><span>{$obj.tel}</span></td><td><span>{$obj.mobile}</span></td><td><span>{$obj.office_email}</span></td><td><span>{$obj.qq}</span></td><td><span>{$obj.state}</span></td><td align="center">
+			  <a href="ecs_admin_user.php?act=detail&id={$obj.user_id}&pri=user_id">详细</a>
+			</td><tr> {foreachelse}
+			  <tr><td class="no-records" colspan="10">{$lang.no_records}</td></tr>
+			  {/foreach}
+			</table>
+			<table id="page-table" cellspacing="0">
+			  <tr>
+				<td align="right" nowrap="true">
+				{include file="page.htm"}
+				</td>
+			  </tr>
+			</table>
+			  <input type="submit" value="批量部门分配" id="btnSubmit" name="btnSubmit" class="button"  />
+			</div>
+			</form>
+			<script type="text/javascript">
+			  function exportTable(){
+				alert("功能暂未实现");
+			  }
+
+			  listTable.recordCount = {$record_count};
+			  listTable.pageCount = {$page_count};
+
+			  {foreach from=$filter item=item key=key}
+			  listTable.filter.{$key} = '{$item}';
+			  {/foreach}
+
+			</script>
+			{if $full_page}
+			{include file="pagefooter.htm"}
+			{/if}
+			

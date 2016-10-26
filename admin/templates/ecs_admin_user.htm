@@ -1,0 +1,90 @@
+
+				{include file="pageheader.htm"}
+				 <div id="tabbody-div">
+				<form enctype="multipart/form-data" action="ecs_admin_user.php?act=insert" method="post" name="theForm">
+				<table align="center">
+				<tr >
+				<td>员工登录名:</td>
+				<td><input  name='user_name' value='{$ecs_admin_user.user_name}'/></td>
+			</tr><tr >
+				<td>密码:</td>
+				<td><input  name='password' value='{$ecs_admin_user.password}'/></td>
+			</tr><tr >
+				<td>员工姓名:</td>
+				<td><input  name='name' value='{$ecs_admin_user.name}'/></td>
+			</tr><tr >
+				<td>员工照片:</td>
+				<td><input  name='photo' type='file' accept='.jpg,.jpeg,.gif,.png,.bmp'/></td>
+			</tr><tr >
+				<td>性别:</td>
+				<td><select name='sex'><option value=''>请选择</option><option value='女'>女</option><option value='男'>男</option></select></td>
+			</tr><tr >
+				<td>身份证号:</td>
+				<td><input name='idcard' onblur='idcardOnBlur(event);'/><script>function idcardOnBlur(event){if(birthCom){birthCom.init(event.currentTarget.value.substr(-12,8));}}</script></td>
+			</tr><tr >
+				<td>出生日期:</td>
+				<td><div id='birthComponent' post-name='birth'></div><script src='js/birth.js'></script></td>
+			</tr><tr >
+				<td>学历:</td>
+				<td><select name='education'><option value=''>请选择</option><option value='初中'>初中</option><option value='高中'>高中</option><option value='大学专科'>大学专科</option><option value='大学本科'>大学本科</option><option value='硕士'>硕士</option><option value='博士'>博士</option></select></td>
+			</tr><tr >
+				<td>部门:</td>
+				<td><select name='depart_id'><option value=''>请选择</option><option value='市场部'>市场部</option><option value='法务部'>法务部</option><option value='财务部'>财务部</option><option value='文案部'>文案部</option><option value='运维部'>运维部</option></select></td>
+			</tr><tr >
+				<td>职责:</td>
+				<td><select name='emp_title'><option value=''>请选择</option><option value='员工'>员工</option><option value='部门主管'>部门主管</option></select></td>
+			</tr><tr >
+				<td>办公电话:</td>
+				<td><div id='tel_div'><input  name='tel' type='hidden'/><input  placeholder='区号'/>-<input  placeholder='电话号'/>-<input  placeholder='分机号'/></div></td>
+			</tr><tr >
+				<td>手机号:</td>
+				<td><input  name='mobile' value='{$ecs_admin_user.mobile}'/></td>
+			</tr><tr >
+				<td>办公Email:</td>
+				<td><input  name='office_email' value='{$ecs_admin_user.office_email}'/></td>
+			</tr><tr >
+				<td>办公QQ:</td>
+				<td><input  name='qq' value='{$ecs_admin_user.qq}'/></td>
+			</tr><tr >
+				<td>状态:</td>
+				<td><select name='state'><option value=''>请选择</option><option value='试用'>试用</option><option value='正式'>正式</option><option value='离职'>离职</option></select></td>
+			</tr><tr >
+				<td>住址:</td>
+				<td><div id='areaComponent' data='address' gen-input='true' ></div><script src='js/area.js'></script></td>
+			</tr><tr >
+				<td>详细地址:</td>
+				<td><input  name='detail_address' value='{$ecs_admin_user.detail_address}'/></td>
+			</tr><tr >
+				<td>紧急联系人姓名:</td>
+				<td><input  name='first_contact_man' value='{$ecs_admin_user.first_contact_man}'/></td>
+			</tr><tr >
+				<td>紧急联系人关系:</td>
+				<td><input  name='first_contact_relation' value='{$ecs_admin_user.first_contact_relation}'/></td>
+			</tr><tr >
+				<td>备用联系人手机号:</td>
+				<td><input  name='second_contact_mobile' value='{$ecs_admin_user.second_contact_mobile}'/></td>
+			</tr>
+				</table>
+				<div class="button-div">
+			        <input type="button" value="提交" class="button" onclick="validate();" />
+			     </div>
+				</form>
+				</div>
+			<script>
+				function validate(){
+					// 生日
+					if(birthCom){
+						birthCom.init();
+					}
+					// 电话
+					if(document.getElementById("tel_div")){
+						var tel_div = document.getElementById("tel_div");
+					    tel_div.children[0].value = tel_div.children[1].value+"-"+tel_div.children[2].value+"-"+tel_div.children[3].value;
+					}
+
+					var form = document.forms["theForm"];
+					form.submit();
+				}
+			</script>
+			{include file="pagefooter.htm"}
+			

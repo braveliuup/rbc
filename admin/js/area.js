@@ -125,7 +125,7 @@ function setSelectChecked(selele, checkValue){
     }
 };
 
-onload=function(){
+window.addEventListener('load',function(){
 
     var data = document.getElementById('areaComponent').getAttribute('data');
     var genInput = document.getElementById('areaComponent').getAttribute('gen-input');
@@ -138,6 +138,5 @@ onload=function(){
         areaCom = createAreaComponent(data+'[]', null, genInput);
     }
     createAreaTextInput(data);
-}
-
+});
 

@@ -359,4 +359,6 @@ $_LANG['parter_list'] = "合作商列表";
 /*供应商管理*/
 $_LANG['18_supplier_manage'] = "供应商管理";
 $_LANG['supplier_list'] = "供应商列表";
+$_LANG['19_rbc_emp_manage'] = "红细胞员工管理";
+$_LANG['rbc_emp_list'] = "红细胞员工列表";
 ?>

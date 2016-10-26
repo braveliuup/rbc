@@ -12,52 +12,33 @@ if (!defined('IN_ECS'))
 }
 
 
-function suppliers_list()
+function ecs_admin_user_list()
 {
     $where = " where 1=1 ";
-    $filter['keyword']          = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);
-    $filter['partnersAddress']          = empty($_REQUEST['partnersAddress']) ? '' : trim($_REQUEST['partnersAddress']);
-    $filter['check_state']          = empty($_REQUEST['check_state']) ? '' : trim($_REQUEST['check_state']);
-    $filter['signAgreement']          = empty($_REQUEST['signAgreement']) ? '' : trim($_REQUEST['signAgreement']);
-    $filter['operator_keyword']          = empty($_REQUEST['operator_keyword']) ? '' : trim($_REQUEST['operator_keyword']);
-    $filter['auditor_keyword']          = empty($_REQUEST['auditor_keyword']) ? '' : trim($_REQUEST['auditor_keyword']);
-    $filter['valid_state']          = empty($_REQUEST['valid_state']) ? '' : trim($_REQUEST['valid_state']);
+    foreach($_POST as $k=>$v){
+        if(substr($k,0,7) != 'kfilter')
+            continue;
+        if($v == '')
+            continue;
+        $ary = explode('-', substr($k,7));
+        $where .= ' and (';
+        $temps='';
+        foreach($ary as $idx=>$field){
+           if($idx == 0){
+               $temps .= $field." LIKE '%" . mysql_like_quote($v) . "%'";
+           }else{
+                $temps .= " OR ".$field." LIKE '%" . mysql_like_quote($v) . "%'" ;
+           }
+        }
+        $where .= $temps .' ) ';
+    }
 
-    /* 关键字 */
-    if (!empty($filter['keyword']))
-    {
-        $where .= " and (parter_code LIKE '%" . mysql_like_quote($filter['keyword']) . "%' OR partnersName LIKE '%" . mysql_like_quote($filter['keyword']) . "%' OR partnersLoginName LIKE '%" . mysql_like_quote($filter['keyword']) . "%' OR leaderName LIKE '%" . mysql_like_quote($filter['keyword']) . "%'OR leaderPhone LIKE '%" . mysql_like_quote($filter['keyword']) . "%')";
-    }
-    if (!empty($filter['partnersAddress']))
-    {
-        $where .= " AND (partnersAddress LIKE '%" . mysql_like_quote($filter['partnersAddress']) . "%')";
-    }
-    if (!empty($filter['check_state']))
-    {
-        $where .= " AND (check_state ='".$filter['check_state']."')";
-    }
-    if (!empty($filter['operator_keyword']))
-    {
-        $where .= " AND (operator LIKE '%" . mysql_like_quote($filter['operator_keyword']) . "%' OR operator_name LIKE '%" . mysql_like_quote($filter['operator_keyword']) . "%')";
-    }
-    if (!empty($filter['auditor_keyword']))
-    {
-        $where .= " AND (auditor LIKE '%" . mysql_like_quote($filter['auditor_keyword']) . "%' OR auditor_name LIKE '%" . mysql_like_quote($filter['auditor_keyword']) . "%')";
-    }
-    if (!empty($filter['signAgreement']))
-    {
-        $where .= " AND (signAgreement = '".$filter['signAgreement']."'')";
-    }
-    if (!empty($filter['valid_state']))
-    {
-        $where .= " AND (valid_state = '".$filter['valid_state']."'')";
-    }
     /* 记录总数 */
-    $sql = "SELECT COUNT(*) FROM rbc_supplier AS g ".$where;
+    $sql = "SELECT COUNT(*) FROM ecs_admin_user AS g ".$where;
     $filter['record_count'] = $GLOBALS['db']->getOne($sql);
     /* 分页大小 */
     $filter = page_and_size($filter);
-    $sql = "select * from rbc_supplier " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+    $sql = "select * from ecs_admin_user ".$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
 
     $row = $GLOBALS['db']->getAll($sql);
 
@@ -70,8 +51,12 @@ function valid_parter(){
     make_json_result($ret);
 }
 
-function get_supplier($id){
-    $sql = "select * from rbc_supplier where id = '{$id}'";
+function get_ecs_admin_user($id){
+    $id_field = 'id';
+    if(isset($_REQUEST['pri'])){
+        $id_field = $_REQUEST['pri'];
+    }
+    $sql = "select * from ecs_admin_user where ".$id_field." = '{$id}'";
     $return_array = $GLOBALS['db']->getRow($sql);
     return $return_array;
 }

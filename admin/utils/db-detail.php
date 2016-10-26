@@ -87,47 +87,23 @@ class db{
 			if($comment == '' || $type == 'id'){
 				continue;
 			}
-			$input ="<input {\$readonly} name='{$colname}' value='未解析的类型{$coltype}'/>";
+			$input ="<input  name='{$colname}' value='未解析的类型{$coltype}'/>";
 			if($coltype == "varchar"){
 				switch ($type){
 					case 'photo':
-						$input ="<input  name='{$colname}' type='file' accept='.jpg,.jpeg,.gif,.png,.bmp'/>";
-						break;
-					case 'sex':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='女'>女</option><option value='男'>男</option></select>";
-						break;
-					case 'idcard':
-						$input ="<input name='{$colname}' onblur='idcardOnBlur(event);'/><script>function idcardOnBlur(event){if(birthCom){birthCom.init(event.currentTarget.value.substr(-12,8));}}</script>";
-						break;
-					case 'birth':
-						$input = "<div id='birthComponent' post-name='{$colname}'></div><script src='js/birth.js'></script>";
-						break;
-					case 'edu':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='初中'>初中</option><option value='高中'>高中</option><option value='大学专科'>大学专科</option><option value='大学本科'>大学本科</option><option value='硕士'>硕士</option><option value='博士'>博士</option></select>";
-						break;
-					case 'depart':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='市场部'>市场部</option><option value='法务部'>法务部</option><option value='财务部'>财务部</option><option value='文案部'>文案部</option><option value='运维部'>运维部</option></select>";
-						break;
-					case 'title':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='员工'>员工</option><option value='部门主管'>部门主管</option></select>";
-						break;
-					case 'tel':
-						$input ="<div id='tel_div'><input  name='{$colname}' type='hidden'/><input  placeholder='区号'/>-<input  placeholder='电话号'/>-<input  placeholder='分机号'/></div>";
-						break;
-					case 'state':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='试用'>试用</option><option value='正式'>正式</option><option value='离职'>离职</option></select>";
+						$input ="<img width='64px' height='64px' src='../{\${$tablename}.{$colname}}'/>";
 						break;
 					case 'addr':
-						$input = "<div id='areaComponent' data='address' gen-input='true' ></div><script src='js/area.js'></script>";
+						$input ="<input disabled id='areaComponent' data='areaComponent' value='{\${$tablename}.{$colname}}'/><script src='js/area.js'></script>";
 						break;
 					default:
-						$input ="<input  name='{$colname}' value='{\${$tablename}.{$colname}}'/>";
+						$input ="<input disabled  value='{\${$tablename}.{$colname}}'/>";
 						break;
 				}
 			}else if($coltype == "text"){
-				$input ="<textarea  name='{$colname}' />{\${$tablename}.{$colname}}</textarea>";
+				$input ="<textarea disabled name='{$colname}' />{\${$tablename}.{$colname}}</textarea>";
 			}else if($coltype == "int" || $coltype == "tinyint" || $coltype == "mediumint" || $coltype == "double"){
-				$input ="<input  name='{$colname}' value='{\${$tablename}.{$colname}}'/>";
+				$input ="<input disabled name='{$colname}' value='{\${$tablename}.{$colname}}'/>";
 			}
 			$trs .= "<tr >
 				<td>{$comment}:</td>
@@ -260,7 +236,6 @@ class db{
 				.'
 				</table>
 				<div class="button-div">
-			        <input type="button" value="提交" class="button" onclick="validate();" />
 			     </div>
 				</form>
 				</div>
@@ -285,7 +260,7 @@ class db{
 		echo $content;
 
 		$filepath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'templates';
-		$filename = $tablename.'.htm';
+		$filename = $tablename.'_detail.htm';
 		$fp = fopen($filepath.DIRECTORY_SEPARATOR.$filename, "w");
 		if($fp){
 			$flag = fwrite($fp, $content);
@@ -365,7 +340,7 @@ if(isset($_GET['databasename'])){
 	$DB = new db();
 	$tablelist = $DB->table_list($databasename);
 	for ($i=0;$i<count($tablelist);$i++){
-		echo 'CLASS:<a target="_self" href="db-post.php?gen=class&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a>&nbsp&nbspHTML:<a target="_self" href="db-post.php?gen=html&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a><br/>';
+		echo 'CLASS:<a target="_self" href="db-detail.php?gen=class&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a>&nbsp&nbspHTML:<a target="_self" href="db-detail.php?gen=html&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a><br/>';
 	}
 }
 //-----------------------------------

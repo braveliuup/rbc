@@ -80,7 +80,7 @@ class db{
 			$colcomment = $arr['COLUMN_COMMENT'];
 			$commentAry = explode('_',$colcomment);
 			$type = "";
-			if(count($commentAry) >= 2){
+			if(count($commentAry) == 2){
 				$type = $commentAry[1];
 			}
 			$comment = $commentAry[0];
@@ -94,7 +94,7 @@ class db{
 						$input ="<input  name='{$colname}' type='file' accept='.jpg,.jpeg,.gif,.png,.bmp'/>";
 						break;
 					case 'sex':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='女'>女</option><option value='男'>男</option></select>";
+						$input = "<select name='{$colname}'><option>请选择</option><option value='女'>女</option><option value='男'>男</option></select>";
 						break;
 					case 'idcard':
 						$input ="<input name='{$colname}' onblur='idcardOnBlur(event);'/><script>function idcardOnBlur(event){if(birthCom){birthCom.init(event.currentTarget.value.substr(-12,8));}}</script>";
@@ -103,19 +103,19 @@ class db{
 						$input = "<div id='birthComponent' post-name='{$colname}'></div><script src='js/birth.js'></script>";
 						break;
 					case 'edu':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='初中'>初中</option><option value='高中'>高中</option><option value='大学专科'>大学专科</option><option value='大学本科'>大学本科</option><option value='硕士'>硕士</option><option value='博士'>博士</option></select>";
+						$input = "<select name='{$colname}'><option>请选择</option><option value='初中'>初中</option><option value='高中'>高中</option><option value='大学专科'>大学专科</option><option value='大学本科'>大学本科</option><option value='硕士'>硕士</option><option value='博士'>博士</option></select>";
 						break;
 					case 'depart':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='市场部'>市场部</option><option value='法务部'>法务部</option><option value='财务部'>财务部</option><option value='文案部'>文案部</option><option value='运维部'>运维部</option></select>";
+						$input = "<select name='{$colname}'><option>请选择</option><option value='市场部'>市场部</option><option value='法务部'>法务部</option><option value='财务部'>财务部</option><option value='文案部'>文案部</option><option value='运维部'>运维部</option></select>";
 						break;
 					case 'title':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='员工'>员工</option><option value='部门主管'>部门主管</option></select>";
+						$input = "<select name='{$colname}'><option>请选择</option><option value='员工'>员工</option><option value='部门主管'>部门主管</option></select>";
 						break;
 					case 'tel':
 						$input ="<div id='tel_div'><input  name='{$colname}' type='hidden'/><input  placeholder='区号'/>-<input  placeholder='电话号'/>-<input  placeholder='分机号'/></div>";
 						break;
 					case 'state':
-						$input = "<select name='{$colname}'><option value=''>请选择</option><option value='试用'>试用</option><option value='正式'>正式</option><option value='离职'>离职</option></select>";
+						$input = "<select name='{$colname}'><option>请选择</option><option value='试用'>试用</option><option value='正式'>正式</option><option value='离职'>离职</option></select>";
 						break;
 					case 'addr':
 						$input = "<div id='areaComponent' data='address' gen-input='true' ></div><script src='js/area.js'></script>";
@@ -249,43 +249,177 @@ class db{
 	}
 
 	public function showhtml($databasename,$tablename){
+		mysql_select_db($databasename,$this->db_conn);
+		$sql = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name ='{$tablename}'";
+		$query = mysql_query($sql);
+		$list_field = array();
+		$filter_field = array();
+		$filter_param = array();
+		while ( $arr = mysql_fetch_assoc($query)) {
+			$colname = $arr['COLUMN_NAME'];
+			$coltype = $arr['DATA_TYPE'];
+			$colcomment = $arr['COLUMN_COMMENT'];
+			$commentAry = explode('_', $colcomment);
+			$comment = $commentAry[0];
+			$type = "";
+			$is_listfield = "";
+			$is_filter ="";
+			if (count($commentAry) == 2) {
+				$type = $commentAry[1];
+			}
+			if (count($commentAry) == 3) {
+				$type = $commentAry[1];
+				$is_listfield = $commentAry[2];
+			}
+			if (count($commentAry) == 4) {
+				$type = $commentAry[1];
+				$is_listfield = $commentAry[2];
+				$is_filter = $commentAry[3];
+			}
 
-		$content =  '
-				{include file="pageheader.htm"}
-				 <div id="tabbody-div">
-				<form enctype="multipart/form-data" action="'.$tablename.'.php?act=insert" method="post" name="theForm">
-				<table align="center">
-				'.
-				$this->html_field_list($databasename, $tablename)
-				.'
-				</table>
-				<div class="button-div">
-			        <input type="button" value="提交" class="button" onclick="validate();" />
-			     </div>
-				</form>
-				</div>
-			<script>
-				function validate(){
-					// 生日
-					if(birthCom){
-						birthCom.init();
-					}
-					// 电话
-					if(document.getElementById("tel_div")){
-						var tel_div = document.getElementById("tel_div");
-					    tel_div.children[0].value = tel_div.children[1].value+"-"+tel_div.children[2].value+"-"+tel_div.children[3].value;
-					}
-
-					var form = document.forms["theForm"];
-					form.submit();
+			if($is_filter){
+				$ary = explode(':',$is_filter);
+				if(!$filter_field[$ary[1]]){
+					$filter_field[$ary[1]] = array('data'=>array($colname=>$comment), 'type'=>$type);
+				}else{
+					$filter_field[$ary[1]]['data'][$colname] = $comment;
 				}
+			}
+			if(strstr($is_listfield , 'list')){
+				$list_field[$colname] = $comment;
+			}
+		}
+		$content='{if $full_page}
+				{include file="pageheader.htm"}
+				{insert_scripts files="../js/utils.js,listtable.js"}
+				<div class="form-div">
+			  <form action="javascript:searchParters()" name="searchForm">
+				<img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />';
+		$search='';
+		foreach($filter_field as $key=>$value){
+			$search .= '<span>'.$key.'：</span>';
+			if($value['type'] == 'addr'){
+				foreach($value['data'] as $k=>$v){
+					$search .= '<div style="display:inline" id="areaComponent" data="'.$k.'" gen-input="true"></div><script src="js/area.js"></script>';
+					$filter_param[] = $k;
+				}
+			}else if($value['type'] == 'depart'){
+				foreach($value['data'] as $k=>$v){
+					$search .= '<select name="'.$k.'"><option value="">请选择</option><option value="市场部">市场部</option><option value="法务部">法务部</option><option value="财务部">财务部</option><option value="文案部">文案部</option><option value="运维部">运维部</option></select>';
+					$filter_param[] = $k;
+				}
+			}else if($value['type'] == 'edu'){
+				foreach($value['data'] as $k=>$v){
+					$search .= '<select name="'.$k.'"><option value="">请选择</option><option value="初中">初中</option><option value="高中">高中</option><option value="大学专科">大学专科</option><option value="大学本科">大学本科</option><option value="硕士">硕士</option><option value="博士">博士</option></select>';
+					$filter_param[] = $k;
+				}
+			}else if($value['type'] == 'birth'){
+				foreach($value['data'] as $k=>$v){
+					$search .= '<div style="display:inline" id="birthComponent" post-name="'.$k.'"></div><script src="js/birth.js"></script>';
+					$filter_param[] = $k;
+				}
+			}else if($value['type'] == 'state'){
+				foreach($value['data'] as $k=>$v){
+					$search .= '<select name="'.$k.'"><option value="">请选择</option><option value="试用">试用</option><option value="正式">正式</option><option value="离职">离职</option></select>';
+					$filter_param[] = $k;
+				}
+			}else if($value['type'] == 'sex'){
+				foreach($value['data'] as $k=>$v){
+					$search .= '<select name="'.$k.'"><option value="">请选择</option><option value="男">男</option><option value="女">女</option></select>';
+					$filter_param[] = $k;
+				}
+			}else{
+				$ary = $value['data'];
+				$name='';
+				$placeholder = '';
+				foreach($ary as $k=>$v){
+					$name .= $k.'-';
+					$placeholder .=$v.'/';
+				}
+				$search .= '<input name="'.substr($name,0,-1).'" placeholder="'.substr($placeholder, 0, -1).'"/>';
+				$filter_param[] = substr($name,0,-1);
+			}
+		}
+		$content .= $search;
+		$content .= '  <input type="submit" value="搜索" class="button" />
+		  </form>
+		</div>
+		<script language="JavaScript">
+		  function searchParters()
+		  {';
+			foreach($filter_param as $k=>$value){
+				$content .='listTable.filter["kfilter'.$value.'"] = Utils.trim(document.forms["searchForm"].elements["'.$value.'"].value);';
+		  	}
+		$content .='listTable.filter["page"] = 1;
+			listTable.loadList();
+		  }
+		</script>
+		{/if}
+		<form method="post" action="javascript:exportTable()" name="listForm" >
+		  <div class="list-div" id="listDiv">
+		<table cellpadding="3" cellspacing="1">
+		<tr>
+		';
+		$thead='';
+		$tbody='';
+		$idx = 0;
+		$prikey = 'id';
+		foreach($list_field as $key=>$value){
+			if($idx == 0){
+				$thead .='<th><input onclick="listTable.selectAll(this, \''.checkboxes.'\')" type="checkbox"  />'.$value.'</th>';
+				$prikey = $key;
+				$tbody .='<td><input name="checkboxes[]"   type="checkbox" value="{$obj.'.$key.'}" /><span>{$obj.'.$key.'}</span></td>';
+				$idx = 1;
+			}else{
+				$thead .='<th>'.$value.'</th>';
+				$tbody .='<td><span>{$obj.'.$key.'}</span></td>';
+			}
+		}
+		$thead .= ' <th>操作</th>';
+		$tbody .= '<td align="center">
+			  <a href="'.$tablename.'.php?act=detail&id={$obj.'.$prikey.'}">详细</a>
+			</td>';
+		$content .=$thead.'</tr>
+		  {foreach from=$'.$tablename.'_list item=obj}
+		  <tr>'
+		  .
+		  $tbody
+		  .
+ 		'<tr>';
+		$content .= ' {foreachelse}
+			  <tr><td class="no-records" colspan="10">{$lang.no_records}</td></tr>
+			  {/foreach}
+			</table>
+			<table id="page-table" cellspacing="0">
+			  <tr>
+				<td align="right" nowrap="true">
+				{include file="page.htm"}
+				</td>
+			  </tr>
+			</table>
+			  <input type="submit" value="批量部门分配" id="btnSubmit" name="btnSubmit" class="button"  />
+			</div>
+			</form>
+			<script type="text/javascript">
+			  function exportTable(){
+				alert("功能暂未实现");
+			  }
+
+			  listTable.recordCount = {$record_count};
+			  listTable.pageCount = {$page_count};
+
+			  {foreach from=$filter item=item key=key}
+			  listTable.filter.{$key} = \'{$item}\';
+			  {/foreach}
+
 			</script>
+			{if $full_page}
 			{include file="pagefooter.htm"}
+			{/if}
 			';
 		echo $content;
-
 		$filepath = dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'templates';
-		$filename = $tablename.'.htm';
+		$filename = $tablename.'_list.htm';
 		$fp = fopen($filepath.DIRECTORY_SEPARATOR.$filename, "w");
 		if($fp){
 			$flag = fwrite($fp, $content);
@@ -365,7 +499,7 @@ if(isset($_GET['databasename'])){
 	$DB = new db();
 	$tablelist = $DB->table_list($databasename);
 	for ($i=0;$i<count($tablelist);$i++){
-		echo 'CLASS:<a target="_self" href="db-post.php?gen=class&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a>&nbsp&nbspHTML:<a target="_self" href="db-post.php?gen=html&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a><br/>';
+		echo 'CLASS:<a target="_self" href="db-html.php?gen=class&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a>&nbsp&nbspHTML:<a target="_self" href="db-html.php?gen=html&databasename='.$databasename.'&tablename='.$tablelist[$i].'">'.$tablelist[$i].'</a><br/>';
 	}
 }
 //-----------------------------------

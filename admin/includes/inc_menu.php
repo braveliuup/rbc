@@ -157,4 +157,6 @@ $modules['16_email_manage']['view_sendlist']        = 'view_sendlist.php?act=lis
 $modules['17_parter_manage']['parter_list']        = 'parter.php?act=list';
 $modules['18_supplier_manage']['supplier_list']        = 'supplier.php?act=list';
 
+$modules['19_rbc_emp_manage']['rbc_emp_list']        = 'ecs_admin_user.php?act=list';
+
 ?>
