@@ -25,7 +25,7 @@ require(dirname(__FILE__) . '/includes/lib_parter.php');
 if ($_REQUEST['act'] == 'logout')
 {
     $sess->destroy_session();
-     $_REQUEST['act'] = 'login';
+    exit('<script>top.location.href="templates/parter/parter_login.htm"</script>');
  }
 if ($_REQUEST['act'] == '' || $_REQUEST['act'] == 'login')
 {
@@ -92,6 +92,22 @@ elseif($_REQUEST['act'] == 'parter_info')
     $smarty->assign('rbc_parter', $partersInfo);
     $smarty->assign('readonly', 'readonly');
     $smarty->display('parter\rbc_parter_info.htm');
+}
+elseif($_REQUEST['act'] == 'rbc_parter_pwd_reset'){
+    $smarty->display('parter\rbc_parter_pwd_reset.htm');
+}
+elseif($_REQUEST['act'] =='reset_parter_pwd'){
+    $sql = "select count(*) from rbc_parter where parter_code = '{$_SESSION["admin_code"]}' and  pwd = '{$_POST["old_pwd"]}'";
+    $result = $db->getOne($sql);
+    if($result == 0){
+        sys_msg('旧密码错误');
+    }else{
+        $sql ="update rbc_parter set pwd = '{$_POST["new_pwd"]}' where parter_code = '{$_SESSION["admin_code"]}'";
+        if($db->query($sql)){
+//            ecs_header('location:parterAdmin.php?act=logout');
+            sys_msg('密码修改成功,请重新登录',0, array(array('href'=>'parterAdmin.php?act=logout')));
+        }
+    }
 }
 else if($_REQUEST['act'] == 'rbc_parter_user_list')
 {
@@ -175,7 +191,6 @@ else if($_REQUEST['act'] == 'update_delivery_address'){
             ecs_header('location:parterAdmin.php?act=delivery_address');
         }
     }
-
 }
 else if($_REQUEST['act'] == 'add_delivery_address')
 {
