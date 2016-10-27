@@ -109,6 +109,11 @@ elseif($_REQUEST['act'] =='reset_parter_pwd'){
         }
     }
 }
+elseif($_REQUEST['act'] =='rbc_parter_consume_list'){
+    $smarty->assign('full_page', 1);
+
+    $smarty->display('parter\rbc_parter_consume_list.htm');
+}
 else if($_REQUEST['act'] == 'rbc_parter_user_list')
 {
     /* pageheader 赋值*/

@@ -1,0 +1,169 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+{if $full_page}
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,listtable.js"}
+
+<div class="form-div">
+  <form action="javascript:searchParters()" name="searchForm">
+    <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
+    <span>用户：</span><input name="kfilteruser_name-mobile_phone-name" placeholder="用户名/登录名/手机号"/>
+    <span>所在地：</span>
+    <div id="areaComponent" style="display: inline" data="kfilteraddress" gen-input="true"></div>
+    <span>员工：</span><input name="kfilterparter_emp_name" placeholder="员工名称"/>
+    <span>性别：</span>
+    <select name="kfiltersex">
+      <option value="">请选择</option>
+      <option value="1">男</option>
+      <option value="2">女</option>
+    </select>
+    <span>分配情况：</span>
+    <select name="kfilteris_assign">
+      <option value="">请选择</option>
+      <option value="已分配">已分配</option>
+      <option value="未分配">未分配</option>
+    </select>
+    <span>生日：</span>
+    <div id="birthComponent" post-name="kfilterbirth" style="display: inline;"></div>
+    <input type="submit" value="搜索" class="button" />
+  </form>
+</div>
+<script language="JavaScript">
+  function searchParters()
+  {
+    birthCom.init();
+    areaCom.init();
+    listTable.filter['kfilteruser_name-mobile_phone-name'] = Utils.trim(document.forms['searchForm'].elements['kfilteruser_name-mobile_phone-name'].value);
+    listTable.filter['kfilteraddress'] = (document.forms['searchForm'].elements['kfilteraddress'].value);
+    listTable.filter['kfilterparter_emp_name'] = (document.forms['searchForm'].elements['kfilterparter_emp_name'].value);
+    listTable.filter['kfiltersex'] = (document.forms['searchForm'].elements['kfiltersex'].value);
+    listTable.filter['kfilteris_assign'] = (document.forms['searchForm'].elements['kfilteris_assign'].value);
+    listTable.filter['kfilterbirth'] = (document.forms['searchForm'].elements['kfilterbirth'].value);
+    listTable.filter['page'] = 1;
+    listTable.query = 'query_user';
+    listTable.loadList();
+  }
+</script>
+<style>
+  ul
+  {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+  }
+  ul li
+  {
+  }
+
+  #displayItemComponent{
+    position:absolute;
+    background-color: #f7f7f7;
+    margin-left:8px;
+    padding:0 20px 10px 20px;
+    display:none;
+  }
+
+</style>
+<div  id="displayItemComponent">
+  <ul >
+    <li><input type="checkbox"/>字段 </li>
+  </ul>
+  <hr width="100%">
+  <input type="button" value="确定" onclick="initDisplayItem()"/>
+  <input type="button" value="取消" onclick="hideFieldList()"/>
+</div>
+<script>
+  var div =  document.getElementById('displayItemComponent');
+
+  function showFieldList(){
+    alert('未实现');
+    return;
+    div.style.display = 'block';
+  }
+
+  function hideFieldList(){
+    div.style.display = 'none';
+  }
+
+  function initDisplayItem() {
+    hideFieldList();
+  }
+</script>
+{/if}
+
+<form method="post" action="javascript:exportTable()" name="listForm" >
+  <!-- start parter list -->
+  <div class="list-div" id="listDiv">
+    <table cellpadding="3" cellspacing="1">
+      <tr>
+        <th>
+          <input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号
+        </th>
+        <th>商品</a></th>
+        <th>用户姓名</a></th>
+        <th>电话</a></th>
+        <th>服务员工</a></th>
+        <th>消费金额</th>
+        <th>支付方式</th>
+        <th>订单生成时间</th>
+        <th>分成状态</th>
+      <tr>
+        {foreach from=$list item=obj}
+      <tr>
+        <td><input type="checkbox" name="checkboxes[]"  value="{$obj.id}"/>{$obj.user_id}</td>
+        <td><span>{$obj.name}</span></td>
+        <td><span>{$obj.mobile_phone}</span></td>
+        <td><span>{$obj.parter_emp_name}</span></td>
+        <td><span>{$obj.vip}</span></td>
+        <td align="center">
+          <a href="javascipt:void();" >详细</a>
+          <!--<a href="parterAdmin.php?act=rbc_parter_user_detail&id={$obj.user_id}" >详细</a>-->
+          <a href="javascipt:void();" >{if $obj.is_assign eq '已分配'}重新分配{else}分配{/if}</a>
+          <!--<a href="parterAdmin.php?act=edit_parter_emp&id={$obj.user_id}" >{if $obj.is_assign eq '已分配'}重新分配{else}分配{/if}</a>-->
+          <a href="javascript:validUser({$obj.user_id})" >积分管理</a>
+          <!--<a href="#parter.php?act=point_shop&id={$obj.id}">查看积分商城</a>-->
+        </td>
+      </tr>
+      {foreachelse}
+      <tr><td class="no-records" colspan="10">{$lang.no_records}</td></tr>
+      {/foreach}
+    </table>
+    <!-- end parter list -->
+
+    <!-- 分页 -->
+    <table id="page-table" cellspacing="0">
+      <tr>
+        <td align="right" nowrap="true">
+          {include file="page.htm"}
+        </td>
+      </tr>
+    </table>
+
+    <input type="submit" value="选择导出" id="btnSubmit" name="btnSubmit" class="button"  />
+  </div>
+</form>
+
+<script type="text/javascript">
+  function exportTable(){
+    alert("导出列表数据，未实现");
+  }
+
+  listTable.recordCount = {$record_count};
+  listTable.pageCount = {$page_count};
+
+  {foreach from=$filter item=item key=key}
+  listTable.filter.{$key} = '{$item}';
+  {/foreach}
+
+  function validUser(id){
+//    function callback(result){
+//      console.log(result)
+//      listTable.loadList();
+//    }
+//    Ajax.call('parterAdmin.php?act=valid', "id="+id, callback, "POST", "JSON");
+  }
+</script>
+<script src="js/area.js"></script>
+<script src="js/birth.js"></script>
+{if $full_page}
+{include file="pagefooter.htm"}
+{/if}
