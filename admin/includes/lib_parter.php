@@ -293,5 +293,16 @@ function move_image_file($source, $dest)
     }
     return false;
 }
+function get_consignee_addr($id){
+    $sql = "select * from ecs_user_address where address_id = {$id}";
+    $row = $GLOBALS['db']->getRow($sql);
+    return $row;
+}
+/*收件人地址列表*/
+function get_consignee_addr_list(){
+    $sql = "select *,(case when concat(tel_prefix,'-',tel_main,'-',tel_suffix) = '--' then '' else  concat(tel_prefix,'-',tel_main,'-',tel_suffix) end) telconcat,(select group_concat(region_name SEPARATOR ' ') from ecs_region where region_id = t.country or region_id = t.province or region_id = t.city or region_id = t.district) as region from ecs_user_address t where user_id = '{$_SESSION["admin_code"]}' order by is_default desc";
+    $result = $GLOBALS['db']->getAll($sql);
+    return $result;
+}
 
 ?>

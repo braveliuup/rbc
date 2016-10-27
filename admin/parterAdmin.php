@@ -39,7 +39,7 @@ if ($_REQUEST['act'] == '' || $_REQUEST['act'] == 'login')
 elseif($_REQUEST['act'] == 'signin'){
     $_POST['username'] = isset($_POST['username']) ? trim($_POST['username']) : '';
     /* 检查密码是否正确 */
-    $sql = "SELECT id,partnersLoginName, partnersName".
+    $sql = "SELECT id,parter_code,partnersLoginName, partnersName".
         " FROM rbc_parter" .
         " WHERE partnersLoginName = '{$_POST['username']}' and pwd = '{$_POST['pwd']}'" ;
 
@@ -49,6 +49,7 @@ elseif($_REQUEST['act'] == 'signin'){
         // 登录成功
         $_SESSION['admin_id']    = $row['id'];
         $_SESSION['admin_name']  = $row['partnersName'];
+        $_SESSION['admin_code']  = $row['parter_code'];
 
         ecs_header("Location: ./parterAdmin.php\n");
         exit;
@@ -121,11 +122,81 @@ else if($_REQUEST['act'] == 'delivery_address')
     /* 取得国家列表、商店所在国家、商店所在国家的省列表 */
     $smarty->assign('country_list',       get_regions());
     $smarty->assign('shop_province_list', get_regions(1, $_CFG['shop_country']));
+
+    $list = get_consignee_addr_list();
+    $smarty->assign('consignee_list', $list);
+    $smarty->assign('consignee_list_count', count($list));
     $smarty->display('parter\rbc_parter_delivery_add.htm');
+}
+else if($_REQUEST['act'] == 'delete_delivery_addr')
+{
+    $sql = "delete from ecs_user_address where address_id = {$_REQUEST['id']}";
+    if($db->query($sql)){
+        ecs_header('location:parterAdmin.php?act=delivery_address');
+    }
+}
+else if($_REQUEST['act'] == 'delivery_addr_edit')
+{
+    $obj = get_consignee_addr($_REQUEST['id']);
+    $smarty->assign('consignee', $obj);
+
+    $smarty->assign('country_list',       get_regions());
+    $smarty->assign('shop_province_list', get_regions(1, $obj['country']));
+    $smarty->assign('shop_city_list', get_regions(2, $obj['province']));
+    $smarty->assign('shop_district_list', get_regions(3, $obj['city']));
+
+    $list = get_consignee_addr_list();
+    $smarty->assign('consignee_list', $list);
+    $smarty->assign('consignee_list_count', count($list));
+
+    $smarty->display('parter\rbc_parter_delivery_edit.htm');
+}
+else if($_REQUEST['act'] == 'update_delivery_address'){
+    $address_id = $_REQUEST['id'];
+    $user_id = $_SESSION['admin_code'];
+    $sql = "delete from ecs_user_address where address_id = {$address_id}";
+    if($db->query($sql)){
+        $fields="";
+        $values="";
+        foreach($_POST as $k=>$v){
+            $fields.=$k.",";
+            $values.="'{$v}'".",";
+        }
+        $fields .= "user_id,address_id";
+        $values .= "'{$user_id}',{$address_id}";
+        $sql = "insert into ecs_user_address ({$fields}) values ({$values})";
+
+        if($db->query($sql)){
+            if($_POST['is_default'] == '1'){
+                // update other is_default = 0
+                $sql = "update ecs_user_address set is_default = 0 where user_id = '{$_SESSION["admin_code"]}' and address_id != {$db->insert_id()}";
+                $db->query($sql);
+            }
+            ecs_header('location:parterAdmin.php?act=delivery_address');
+        }
+    }
+
 }
 else if($_REQUEST['act'] == 'add_delivery_address')
 {
-    make_json_result('ddd');
+    $fields="";
+    $values="";
+    foreach($_POST as $k=>$v){
+        $fields.=$k.",";
+        $values.="'{$v}'".",";
+    }
+    $fields .= "user_id";
+    $values .= "(select parter_code from rbc_parter where id = {$_SESSION['admin_id']} )";
+    $sql = "insert into ecs_user_address ({$fields}) values ({$values})";
+
+    if($db->query($sql)){
+        if($_POST['is_default'] == '1'){
+            // update other is_default = 0
+            $sql = "update ecs_user_address set is_default = 0 where user_id = '{$_SESSION["admin_code"]}' and address_id != {$db->insert_id()}";
+            $db->query($sql);
+        }
+        ecs_header('location:parterAdmin.php?act=delivery_address');
+    }
 }
 else if($_REQUEST['act'] == 'rbc_parter_emp_list')
 {

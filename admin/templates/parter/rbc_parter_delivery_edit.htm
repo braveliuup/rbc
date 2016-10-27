@@ -16,54 +16,54 @@
 			<td>
 				<select name="country" id="selCountries" onchange="region.changed(this, 1, 'selProvinces')">
 					 {foreach from=$country_list item=country}
-					<option value="{$country.region_id}" >{$country.region_name}</option>
+					<option value="{$country.region_id}"  {if $consignee.country eq $country.region_id}selected{/if}>{$country.region_name}</option>
 					 {/foreach}
 				</select>
 				<select name="province" id="selProvinces" onchange="region.changed(this, 2, 'selCities')">
 					<option value="0">请选择省</option>
 					{foreach from=$shop_province_list item=province}
-					<option value="{$province.region_id}" >{$province.region_name}</option>
+					<option value="{$province.region_id}" {if $consignee.province eq $province.region_id}selected{/if}>{$province.region_name}</option>
 					{/foreach}
 				</select>
 				<select name="city" id="selCities" onchange="region.changed(this, 3, 'selDistricts')">
 					<option value="0">请选择市</option>
-					{foreach from=$city_list item=city}
-					<option value="{$city.region_id}" >{$city.region_name}</option>
+					{foreach from=$shop_city_list item=city}
+					<option value="{$city.region_id}" {if $consignee.city eq $city.region_id}selected{/if}>{$city.region_name}</option>
 					 {/foreach}
 				</select>
-				<select name="district" id="selDistricts" style="display:none">
+				<select name="district" id="selDistricts">
 				<option value="0">请选择区</option>
-				 {foreach from=$district_list item=district}
-				<option value="{$district.region_id}" >{$district.region_name}</option>
+				 {foreach from=$shop_district_list item=district}
+				<option value="{$district.region_id}" {if $consignee.district eq $district.region_id}selected{/if}>{$district.region_name}</option>
 				 {/foreach}
 				</select>
 			</td>
 		</tr>
 		<tr>
 			<td>详细地址<span style="color:red">*</span></td>
-			<td><textarea name="address" style="width:260px;height:60px;" placeholder="建议您如实填写详细收获地址，例如街道名称，门牌号码，楼层和房间号等信息"></textarea></td>
+			<td><textarea name="address"  style="width:260px;height:60px;" placeholder="建议您如实填写详细收获地址，例如街道名称，门牌号码，楼层和房间号等信息">{$consignee.address}</textarea></td>
 		</tr>
 		<tr>
 			<td>邮政编码</td>
-			<td><input name="zipcode" style="width: 200px;" placeholder="如您不清楚邮政区号，请填写000000"/></td>
+			<td><input name="zipcode" value="{$consignee.zipcode}" style="width: 200px;" placeholder="如您不清楚邮政区号，请填写000000"/></td>
 		</tr>
 		<tr>
 			<td>收货人姓名<span style="color:red">*</span></td>
-			<td><input name="consignee" placeholder="长度不超过25个字符"></input></td>
+			<td><input name="consignee" value="{$consignee.consignee}" placeholder="长度不超过25个字符"></input></td>
 		</tr>
 		<tr>
 			<td>手机号码</td>
-			<td><input name="mobile" style="width: 200px;" placeholder="电话号码、手机号必须填一项"></input></td>
+			<td><input name="mobile" value="{$consignee.mobile}" style="width: 200px;" placeholder="电话号码、手机号必须填一项"></input></td>
 		</tr>
 		<tr>
 			<td>电话号码</td>
-			<td><input name="tel_prefix" placeholder="区号"/>-<input name="tel_main" placeholder="电话号码"/>-<input name="tel_suffix" placeholder="分机"/></td>
+			<td><input value="{$consignee.tel_prefix}" name="tel_prefix" placeholder="区号"/>-<input value="{$consignee.tel_main}" name="tel_main" placeholder="电话号码"/>-<input value="{$consignee.tel_suffix}" name="tel_suffix" placeholder="分机"/></td>
 		</tr>
 		<tr>
-			<td colspan="2"><input type="checkbox" value="1" name="is_default" />设置为默认收货地址</td>
+			<td colspan="2"><input type="checkbox" value="1" {if $consignee.is_default eq '1'}checked{/if} name="is_default" />设置为默认收货地址</td>
 		</tr>
 		<tr>
-			<td colspan="2"><input type="button" class="button"  value="保存" onclick="validate()"> </td>
+			<td colspan="2"><input type="button"  class="button" value="确认修改" onclick="validate({$consignee.address_id})"> </td>
 		</tr>
 	</table>
 	</form>
@@ -101,19 +101,10 @@
 		{/foreach}
 	</table>
 	<script>
-		function validate(){
+		function validate(addr_id){
 			var f = document.forms['theForm'];
-			f.action = 'parterAdmin.php?act=add_delivery_address';
+			f.action = 'parterAdmin.php?act=update_delivery_address&id='+addr_id;
 			f.submit();
-//			var data =k_utils.serializeForm('theForm');
-//			var callback = function(result){
-//				if(result.error >0){
-//					alert(result.content);
-//				}else{
-//
-//				}
-//			}
-//			Ajax.call('parterAdmin.php?act=add_delivery_address', data, callback, 'POST', 'JSON');
 		}
 	</script>
 </div>
