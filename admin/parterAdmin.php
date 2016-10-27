@@ -118,7 +118,14 @@ else if($_REQUEST['act'] == 'query_user')
 }
 else if($_REQUEST['act'] == 'delivery_address')
 {
+    /* 取得国家列表、商店所在国家、商店所在国家的省列表 */
+    $smarty->assign('country_list',       get_regions());
+    $smarty->assign('shop_province_list', get_regions(1, $_CFG['shop_country']));
     $smarty->display('parter\rbc_parter_delivery_add.htm');
+}
+else if($_REQUEST['act'] == 'add_delivery_address')
+{
+    make_json_result('ddd');
 }
 else if($_REQUEST['act'] == 'rbc_parter_emp_list')
 {

@@ -1,43 +1,80 @@
 {include file="pageheader.htm"}
-{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
-<div style="height: 30px;width:100%;background-color: #f3f8fe">收货地址</div>
+{insert_scripts files="../js/utils.js,../js/region.js,selectzone.js,colorselector.js"}
+<script>
+	region.isAdmin = true;
+</script>
+<div style="font-weight: bold;height: 30px;width:100%;background-color: #f3f8fe;">收货地址</div>
 <div>
-	<table>
+	<form enctype="multipart/form-data" method="post" id="theForm" >
+
+	<table cellpadding="4">
 		<tr>
 			<td colspan="2"><span style="color:red">新增收货地址</span>&nbsp;&nbsp;电话号码、手机号选填一项，其余均为必填项</td>
 		</tr>
 		<tr>
 			<td>所在地区<span style="color:red">*</span></td>
-			<td></td>
+			<td>
+				<select name="country" id="selCountries" onchange="region.changed(this, 1, 'selProvinces')">
+					 {foreach from=$country_list item=country}
+					<option value="{$country.region_id}" >{$country.region_name}</option>
+					 {/foreach}
+				</select>
+				<select name="province" id="selProvinces" onchange="region.changed(this, 2, 'selCities')">
+					<option value="0">请选择省</option>
+					{foreach from=$shop_province_list item=province}
+					<option value="{$province.region_id}" >{$province.region_name}</option>
+					{/foreach}
+				</select>
+				<select name="city" id="selCities" onchange="region.changed(this, 3, 'selDistricts')">
+					<option value="0">请选择市</option>
+					{foreach from=$city_list item=city}
+					<option value="{$city.region_id}" >{$city.region_name}</option>
+					 {/foreach}
+				</select>
+				<select name="district" id="selDistricts" style="display:none">
+				<option value="0">请选择区</option>
+				 {foreach from=$district_list item=district}
+				<option value="{$district.region_id}" >{$district.region_name}</option>
+				 {/foreach}
+				</select>
+			</td>
 		</tr>
 		<tr>
 			<td>详细地址<span style="color:red">*</span></td>
-			<td><textarea placeholder="建议您如实填写详细收获地址，例如街道名称，门牌号码，楼层和房间号等信息"></textarea></td>
+			<td><textarea name="address" style="width:260px;height:60px;" placeholder="建议您如实填写详细收获地址，例如街道名称，门牌号码，楼层和房间号等信息"></textarea></td>
 		</tr>
 		<tr>
 			<td>邮政编码</td>
-			<td><input placeholder="如您不清楚邮政区号，请填写000000"/></td>
+			<td><input name="zipcode" style="width: 200px;" placeholder="如您不清楚邮政区号，请填写000000"/></td>
 		</tr>
 		<tr>
 			<td>收货人姓名<span style="color:red">*</span></td>
-			<td><input placeholder="长度不超过25个字符"></input></td>
+			<td><input name="consignee" placeholder="长度不超过25个字符"></input></td>
 		</tr>
 		<tr>
 			<td>手机号码</td>
-			<td><input placeholder="电话号码、手机号必须填一项"></input></td>
+			<td><input name="mobile" style="width: 200px;" placeholder="电话号码、手机号必须填一项"></input></td>
 		</tr>
 		<tr>
 			<td>电话号码</td>
-			<td><input placeholder="区号"/>-<input placeholder="电话号码"/>-<input placeholder="分机"/></td>
+			<td><input name="tel" placeholder="区号"/>-<input placeholder="电话号码"/>-<input placeholder="分机"/></td>
 		</tr>
 		<tr>
-			<td colspan="2"><input type="checkbox" />设置为默认收货地址</td>
+			<td colspan="2"><input type="checkbox" name="is_default" />设置为默认收货地址</td>
 		</tr>
 		<tr>
-			<td colspan="2"><input type="button" class="button" value="保存"> </td>
+			<td colspan="2"><input type="button" class="button" value="保存" onclick="validate()"> </td>
 		</tr>
 	</table>
+	</form>
+
 	<hr>
 	<span style="color:red">已保存了{$count}条地址，最多保存20条地址</span>
 	<table></table>
+	<script>
+		function validate(){
+			var
+			Ajax.call('parterAdmin.php?act=add_delivery_address', data, callback, 'POST', 'JSON');
+		}
+	</script>
 </div>
