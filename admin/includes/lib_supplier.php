@@ -84,6 +84,77 @@ function get_shipname_list(){
     return $ary;
 }
 
+function get_year_list(){
+    $ary = array();
+    $y = Date("Y");
+    for($i = 0; $i < 5; $i++){
+        $ary[$y-$i] = $y-$i;
+    }
+    return $ary;
+
+}
+function get_month_list(){
+    $ary = array();
+    $i = 0 ;
+    while($i<12){
+        $i++;
+        $ary[$i] = $i;
+    }
+    return $ary;
+}
+function get_settlement_day($supplier_id){
+    $sql = "select paymentDate from rbc_supplier where id = {$supplier_id}";
+    return $GLOBALS['db']->getOne($sql);
+}
+
+function get_supplier_order_goods($supplier_id){
+    $where = " where a.order_id = b.order_id and b.supplier_id = {$supplier_id} ";
+    $filter['order_sn'] = empty($_REQUEST['order_sn']) ? '' : trim($_REQUEST['order_sn']);
+    $filter['start_time'] =  empty($_REQUEST['start_time']) ? '' : (strpos($_REQUEST['start_time'], '-') > 0 ?  local_strtotime($_REQUEST['start_time']) : $_REQUEST['start_time']);
+    $filter['end_time'] = empty($_REQUEST['end_time']) ? '' : (strpos($_REQUEST['end_time'], '-') > 0 ?  local_strtotime($_REQUEST['end_time']) : $_REQUEST['end_time']);
+    $filter['settle_start_time'] = empty($_REQUEST['settle_start_time']) ? '' : (strpos($_REQUEST['settle_start_time'], '-') > 0 ?  local_strtotime($_REQUEST['settle_start_time']) : $_REQUEST['settle_start_time']);
+    $filter['settle_end_time'] = empty($_REQUEST['settle_end_time']) ? '' : (strpos($_REQUEST['settle_end_time'], '-') > 0 ?  local_strtotime($_REQUEST['settle_end_time']) : $_REQUEST['settle_end_time']);
+    $filter['settlement_status']  = $_REQUEST['settlement_status'];
+////
+////    /* 关键字 */
+//
+    if (!empty($filter['order_sn']))
+    {
+        $where .= " and (b.order_sn = '" . mysql_like_quote($filter['order_sn']) . "' or a.goods_name like '%".mysql_like_quote($filter['order_sn']) ."%') ";
+    }
+    if (!empty($filter['start_time']))
+    {
+        $where .= " AND (b.add_time >= '".$filter['start_time']."')";
+    }
+    if (!empty($filter['end_time']))
+    {
+        $where .= " AND (b.add_time <= '".$filter['end_time']."')";
+    }
+    if (!empty($filter['settle_start_time']))
+    {
+        $where .= " AND (b.add_time >= '".$filter['settle_start_time']."')";
+    }
+    if (!empty($filter['settle_end_time']))
+    {
+        $where .= " AND (b.add_time <= '".$filter['settle_end_time']."')";
+    }
+    if (isset($filter['settlement_status']))
+    {
+        $where .= " and (settlement_status = '" . mysql_like_quote($filter['settlement_status']) . "') ";
+    }
+    /* 记录总数 */
+    $sql = "SELECT COUNT(*) FROM ecs_order_goods a, ecs_order_info b ".$where;
+    $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+    /* 分页大小 */
+    $filter = page_and_size($filter);
+    $sql = "select a.rec_id,b.order_sn,a.goods_name, (SELECT `name` from ecs_users where user_id = b.user_id) user_name,FROM_UNIXTIME(add_time) add_time, a.goods_number, a.xprice, a.shipping_cost, a.xprice*a.goods_number+a.shipping_cost settlement_amount, b.settlement_status  from ecs_order_goods a,ecs_order_info b  " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+
+    $row = $GLOBALS['db']->getAll($sql);
+
+    return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
+    return $result;
+}
+
 function get_supplier_order_list($supplier_id){
 
     $where = " where supplier_id = {$supplier_id} ";
@@ -116,7 +187,7 @@ function get_supplier_order_list($supplier_id){
     $filter['record_count'] = $GLOBALS['db']->getOne($sql);
     /* 分页大小 */
     $filter = page_and_size($filter);
-    $sql = "select order_id, order_sn, add_time, consignee, mobile, zipcode,address,goods_amount,shipping_fee,shipping_status from ecs_order_info " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+    $sql = "select order_id, order_sn, FROM_UNIXTIME(add_time) add_time, consignee, mobile, zipcode,address,goods_amount,shipping_fee,shipping_status from ecs_order_info " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
 
     $row = $GLOBALS['db']->getAll($sql);
 

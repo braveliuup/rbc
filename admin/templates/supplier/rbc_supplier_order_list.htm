@@ -144,14 +144,19 @@
         var input = document.getElementById('invoice_no');
         var sel = document.getElementById('ship_sel');
         var ship_id = sel.options[sel.selectedIndex].value;
+        var ship_name = sel.options[sel.selectedIndex].text;
         var invoice_no = input.value;
         var order_id = event.target.getAttribute('data');
         // ajax
         var callback =function(result){
-            hide_delivery_div();
-            document.getElementById('a_'+order_id).parentNode.innerHTML = '已发货';
+            if(result.error > 0){
+
+            }else{
+                hide_delivery_div();
+                document.getElementById('a_'+order_id).parentNode.innerHTML = '已发货';
+            }
         }
-        callback();
+        Ajax.call('supplierAdmin.php?act=delivery_confirm', 'orderId='+order_id+'&shipId='+ship_id+'&shipName='+ship_name+'&invoiceNo='+invoice_no, callback, 'POST', 'JSON');
     }
     function hide_delivery_div(){
         delivery_div.style.display= 'none';

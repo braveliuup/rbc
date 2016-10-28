@@ -98,6 +98,34 @@ elseif($_REQUEST['act'] == 'rbc_supplier_info')
 
     $smarty->display('supplier\rbc_supplier_info.htm');
 }
+else if($_REQUEST['act'] =='delivery_confirm'){
+    $sql = "update ecs_order_info set shipping_status = 1 , shipping_id = '{$_POST["shipId"]}' , shipping_name = '{$_POST["shipName"]}', invoice_no = '{$_POST['invoiceNo']}' where order_id = {$_POST['orderId']}";
+    if($db->query($sql)){
+        make_json_result('success');
+    }
+}
+elseif($_REQUEST['act'] == 'rbc_supplier_finance'){
+    $list = get_supplier_order_goods($_SESSION['admin_id']);
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 1);
+    $smarty->assign('year_list', get_year_list());
+    $smarty->assign('month_list', get_month_list());
+    $smarty->assign('settlement_day', get_settlement_day($_SESSION['admin_id']));
+    $smarty->display('supplier\rbc_supplier_finance.htm');
+}
+elseif($_REQUEST['act'] == 'rbc_supplier_finance_query'){
+    $list = get_supplier_order_goods($_SESSION['admin_id']);
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 0);
+    make_json_result($smarty->fetch('supplier\rbc_supplier_finance.htm'),'',
+        array('filter' => $list['filter'], 'page_count' => $list['page_count']));
+}
 elseif($_REQUEST['act'] == 'rbc_supplier_pwd_reset'){
     $smarty->display('supplier\rbc_supplier_pwd_reset.htm');
 }
