@@ -116,7 +116,7 @@ function get_supplier_order_list($supplier_id){
     $filter['record_count'] = $GLOBALS['db']->getOne($sql);
     /* 分页大小 */
     $filter = page_and_size($filter);
-    $sql = "select order_id, order_sn, add_time, consignee, mobile, zipcode,address,goods_amount,shipping_fee from ecs_order_info " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+    $sql = "select order_id, order_sn, add_time, consignee, mobile, zipcode,address,goods_amount,shipping_fee,shipping_status from ecs_order_info " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
 
     $row = $GLOBALS['db']->getAll($sql);
 

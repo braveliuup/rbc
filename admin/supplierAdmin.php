@@ -111,6 +111,7 @@ elseif($_REQUEST['act'] == 'rbc_supplier_order_list'){
 
     $ship_list = get_shipname_list();
     $smarty->assign('ship_list', $ship_list);
+    $smarty->assign('ship_status_dic',array('0'=>'未发货','1'=>'已发货','2'=>'已收货','4'=>'退货'));
 
     $smarty->display('supplier\rbc_supplier_order_list.htm');
 }

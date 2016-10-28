@@ -83,7 +83,11 @@
                 <td><span>{$obj.goods_amount}</span></td>
                 <td><span>{$obj.shipping_fee}</span></td>
                 <td align="center">
-                    <a href="javascript:confirm_delivery('{$obj.order_id}');" onclick="locate_delivery_div(event);">确认发货</a>
+                    {if $obj.shipping_status eq '0'}
+                        <a href="javascript:confirm_delivery('{$obj.order_id}');" id="a_{$obj.order_id}" onclick="locate_delivery_div(event);">确认发货</a>
+                    {else}
+                     {$ship_status_dic[$obj.shipping_status]}
+                    {/if}
                 </td>
             </tr>
             {foreachelse}
@@ -101,7 +105,7 @@
         </table>
     </div>
 </form>
-<div id="delivery_div" style="border:solid 1px;padding:20px;z-index:999;position:absolute;display:none;background-color: #f3f3f3">
+<div id="delivery_div" style="width:270px;height: 140px;border:solid 1px;padding:10px;z-index:999;position:absolute;display:none;background-color: #f3f3f3">
     <table align="center" cellpadding="10">
         <tr>
             <td>物流名称</td>
@@ -117,7 +121,7 @@
             <td><input id="invoice_no"/></td>
         </tr>
         <tr>
-            <td><input type="button" value="提交" onclick="submit_delivery()"/></td>
+            <td><input type="button" value="提交" id="confirm_input" data="" onclick="submit_delivery(event)"/></td>
             <td><input type="button" value="取消" onclick="hide_delivery_div()"/></td>
         </tr>
     </table>
@@ -127,22 +131,27 @@
 
     /*确认发货*/
     function confirm_delivery(order_id){
-        delivery_div.style.display = 'block';
-        console.log(this)
+        document.getElementById('confirm_input').setAttribute('data', order_id);
     }
     function locate_delivery_div(event){
-        var left = event.screenX - delivery_div.width;
-        var top = event.screenY;
-        console.log(left)
-        console.log(top)
-        delivery_div.style.left =left;
-        delivery_div.style.top =top;
+        delivery_div.style.display = 'block';
+        var left = event.clientX - delivery_div.clientWidth - 20;
+        var top = event.clientY;
+        delivery_div.style.left =left+'px';
+        delivery_div.style.top =top+'px';
     }
-    function submit_delivery(){
+    function submit_delivery(event){
         var input = document.getElementById('invoice_no');
         var sel = document.getElementById('ship_sel');
         var ship_id = sel.options[sel.selectedIndex].value;
         var invoice_no = input.value;
+        var order_id = event.target.getAttribute('data');
+        // ajax
+        var callback =function(result){
+            hide_delivery_div();
+            document.getElementById('a_'+order_id).parentNode.innerHTML = '已发货';
+        }
+        callback();
     }
     function hide_delivery_div(){
         delivery_div.style.display= 'none';
