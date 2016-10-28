@@ -1,0 +1,72 @@
+{include file="pageheader.htm"}
+<style>
+	.tip{
+		color:red;
+	}
+</style>
+<div>
+	<form enctype="multipart/form-data" method="post" id="theForm" >
+
+	<table cellpadding="4">
+		<tr>
+			<td>请输入旧密码：</td>
+			<td><input name="old_pwd" onblur="validate_old(event)"/><span class="tip" style="display: none;" id="old_pwd_tip">旧密码不能为空</span></td>
+		</tr>
+		<tr>
+			<td>请输入新密码：</td>
+			<td><input id="new_pwd" name="new_pwd" type="password" onblur="validate_new(event)"/><span class="tip" style="display: none;" id="new_pwd_tip">密码不能为空</span></td>
+		</tr>
+		<tr>
+			<td>请再次输入新密码：</td>
+			<td><input id="confirm_pwd" type="password" onblur="validate_confirm(event)"/><span class="tip" style="display: none;" id="confirm_pwd_tip">两次输入的密码不一致</span></td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<input type="button" class="button" value="提交" onclick="validate();">
+			</td>
+		</tr>
+	</table>
+	</form>
+	<script>
+		document.forms['theForm'].elements['old_pwd'].focus();
+		function validate_old(event){
+			if(event.target.value == '')
+			{
+				event.target.parentNode.lastChild.style.display = 'inline';
+			}else{
+				event.target.parentNode.lastChild.style.display = 'none';
+			}
+
+		}
+		function validate_new(event){
+			if(event.target.value == '')
+			{
+				event.target.parentNode.lastChild.style.display = 'inline';
+			}
+			else{
+				event.target.parentNode.lastChild.style.display = 'none';
+			}
+		}
+		function validate_confirm(event){
+			if(event.target.value != document.getElementById('new_pwd').value)
+			{
+				event.target.parentNode.lastChild.style.display = 'inline';
+			}
+			else{
+				event.target.parentNode.lastChild.style.display = 'none';
+			}
+		}
+		function validate(){
+			for(var i =0  ; i <　document.getElementsByClassName('tip').length; i++){
+				var node = document.getElementsByClassName('tip')[i];
+				if(node.style.display == 'inline'){
+					alert('数据验证不通过')
+					return ;
+				}
+			}
+			var f = document.forms['theForm'];
+			f.action = 'supplierAdmin.php?act=reset_supplier_pwd';
+			f.submit();
+		}
+	</script>
+</div>

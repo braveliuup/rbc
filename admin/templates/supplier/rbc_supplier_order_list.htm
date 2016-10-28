@@ -1,0 +1,315 @@
+{if $full_page}
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,../js/calendar.php,listtable.js"}
+<link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
+
+<!-- 订单搜索 -->
+<div class="form-div">
+  <form action="javascript:searchOrder()" name="searchForm">
+    <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
+
+      订单编号<input name="order_sn" type="text" id="order_sn" size="15">
+
+      订单日期 从<input type="text" name="start_time" maxlength="60" size="20" readonly="readonly" id="start_time_id" />
+      <input name="start_time_btn" type="button" id="start_time_btn" onclick="return showCalendar('start_time_id', '%Y-%m-%d %H:%M', '24', false, 'start_time_btn');" value="{$lang.btn_select}" class="button"/>
+      到
+      <input type="text" name="end_time" maxlength="60" size="20" readonly="readonly" id="end_time_id" />
+      <input name="end_time_btn" type="button" id="end_time_btn" onclick="return showCalendar('end_time_id', '%Y-%m-%d %H:%M', '24', false, 'end_time_btn');" value="{$lang.btn_select}" class="button"/>
+    <input type="submit" value="查询" class="button" />
+  </form>
+</div>
+<div>
+    <style>
+        .ord_state_query{
+            border-collapse:collapse;
+        }
+        .ord_state_query td{
+            padding-left:20px;
+            padding-right:20px;
+            padding-top:5px;
+            padding-bottom:5px;
+        }
+    </style>
+    <table class="ord_state_query" border="1"   >
+        <tr>
+            <td><a href="javascript:searchOrder('shipping_status','0');">未发货订单</a></td>
+            <td><a href="javascript:searchOrder('shipping_status','1');">已发货订单</a></td>
+            <td><a >未结算订单</a></td>
+            <td><a > 已结算订单</a></td>
+        </tr>
+    </table>
+</div>
+<script>
+    function searchOrder(key, value){
+        listTable.filter = new Object;
+        listTable.filter['order_sn'] = Utils.trim(document.forms['searchForm'].elements['order_sn'].value);
+        listTable.filter['start_time'] = Utils.trim(document.forms['searchForm'].elements['start_time'].value);
+        listTable.filter['end_time'] = document.forms['searchForm'].elements['end_time'].value;
+        listTable.filter['page'] = 1;
+        listTable.filter[key] = value;
+        listTable.query = 'query_order';
+        listTable.loadList();
+    }
+</script>
+{/if}
+<!--供应商订单列表-->
+<form method="post" action="javascript:exportTable()" name="listForm" >
+    <!-- start parter list -->
+    <div class="list-div" id="listDiv">
+        <table cellpadding="3" cellspacing="1">
+            <tr>
+                <th>
+                    <input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号
+                </th>
+                <th>订单号</th>
+                <th>订单生成时间</th>
+                <th>收货人姓名</th>
+                <th>收货人联系电话</th>
+                <th>邮编</th>
+                <th>收货地址</th>
+                <th>订单合计金额</th>
+                <th>运费</th>
+                <th>操作</th>
+            <tr>
+                {foreach from=$list item=obj key=okey}
+            <tr>
+                <td><input type="checkbox" name="checkboxes[]"  value="{$obj.id}"/>{$obj.order_id}</td>
+                <td><a  id="order_{$okey}" order-id="{$obj.order_id}">{$obj.order_sn}</a></td>
+                <td><span>{$obj.add_time}</span></td>
+                <td><span>{$obj.consignee}</span></td>
+                <td><span>{$obj.mobile}</span></td>
+                <td><span>{$obj.zipcode}</span></td>
+                <td><span>{$obj.address}</span></td>
+                <td><span>{$obj.goods_amount}</span></td>
+                <td><span>{$obj.shipping_fee}</span></td>
+                <td align="center">
+                    <a href="javascript:confirm_delivery('{$obj.order_id}');" onclick="locate_delivery_div(event);">确认发货</a>
+                </td>
+            </tr>
+            {foreachelse}
+            <tr><td class="no-records" colspan="10">{$lang.no_records}</td></tr>
+            {/foreach}
+        </table>
+        <!-- end parter list -->
+        <!-- 分页 -->
+        <table id="page-table" cellspacing="0">
+            <tr>
+                <td align="right" nowrap="true">
+                    {include file="page.htm"}
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<div id="delivery_div" style="border:solid 1px;padding:20px;z-index:999;position:absolute;display:none;background-color: #f3f3f3">
+    <table align="center" cellpadding="10">
+        <tr>
+            <td>物流名称</td>
+            <td>
+                <select id="ship_sel">
+                    <option value="">请选择</option>
+                    {html_options options=$ship_list }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>物流订单号</td>
+            <td><input id="invoice_no"/></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="提交" onclick="submit_delivery()"/></td>
+            <td><input type="button" value="取消" onclick="hide_delivery_div()"/></td>
+        </tr>
+    </table>
+</div>
+<script>
+    var delivery_div = document.getElementById('delivery_div');
+
+    /*确认发货*/
+    function confirm_delivery(order_id){
+        delivery_div.style.display = 'block';
+        console.log(this)
+    }
+    function locate_delivery_div(event){
+        var left = event.screenX - delivery_div.width;
+        var top = event.screenY;
+        console.log(left)
+        console.log(top)
+        delivery_div.style.left =left;
+        delivery_div.style.top =top;
+    }
+    function submit_delivery(){
+        var input = document.getElementById('invoice_no');
+        var sel = document.getElementById('ship_sel');
+        var ship_id = sel.options[sel.selectedIndex].value;
+        var invoice_no = input.value;
+    }
+    function hide_delivery_div(){
+        delivery_div.style.display= 'none';
+    }
+
+    /**
+     * 显示订单商品及缩图
+     */
+    var show_goods_layer = 'order_goods_layer';
+    var goods_hash_table = new Object;
+    var timer = new Object;
+
+    /**
+     * 绑定订单号事件
+     *
+     * @return void
+     */
+    function bind_order_event()
+    {
+        var order_seq = 0;
+        while(true)
+        {
+            var order_sn = Utils.$('order_'+order_seq);
+            if (order_sn)
+            {
+                order_sn.onmouseover = function(e)
+                {
+                    try
+                    {
+                        window.clearTimeout(timer);
+                    }
+                    catch(e)
+                    {
+                    }
+                    var order_id = this.getAttribute('order-id');
+                    show_order_goods(e, order_id, show_goods_layer);
+                }
+                order_sn.onmouseout = function(e)
+                {
+                    hide_order_goods(show_goods_layer)
+                }
+                order_seq++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    listTable.listCallback = function(result, txt)
+    {
+        if (result.error > 0)
+        {
+            alert(result.message);
+        }
+        else
+        {
+            try
+            {
+                document.getElementById('listDiv').innerHTML = result.content;
+                bind_order_event();
+                if (typeof result.filter == "object")
+                {
+                    listTable.filter = result.filter;
+                }
+                listTable.pageCount = result.page_count;
+            }
+            catch(e)
+            {
+                alert(e.message);
+            }
+        }
+    }
+    /**
+     * 浏览器兼容式绑定Onload事件
+     *
+     */
+    if (Browser.isIE)
+    {
+        window.attachEvent("onload", bind_order_event);
+    }
+    else
+    {
+        window.addEventListener("load", bind_order_event, false);
+    }
+
+    /**
+     * 建立订单商品显示层
+     *
+     * @return void
+     */
+    function create_goods_layer(id)
+    {
+        if (!Utils.$(id))
+        {
+            var n_div = document.createElement('DIV');
+            n_div.id = id;
+            n_div.className = 'order-goods';
+            document.body.appendChild(n_div);
+            Utils.$(id).onmouseover = function()
+            {
+                window.clearTimeout(window.timer);
+            }
+            Utils.$(id).onmouseout = function()
+            {
+                hide_order_goods(id);
+            }
+        }
+        else
+        {
+            Utils.$(id).style.display = '';
+        }
+    }
+
+    /**
+     * 显示订单商品数据
+     *
+     * @return void
+     */
+    function show_order_goods(e, order_id, layer_id)
+    {
+        create_goods_layer(layer_id);
+        $layer_id = Utils.$(layer_id);
+        $layer_id.style.top = (Utils.y(e) + 12) + 'px';
+        $layer_id.style.left = (Utils.x(e) + 12) + 'px';
+        if (typeof(goods_hash_table[order_id]) == 'object')
+        {
+            response_goods_info(goods_hash_table[order_id]);
+        }
+        else
+        {
+            $layer_id.innerHTML = '加载中...';
+            Ajax.call('order.php?is_ajax=1&act=get_goods_info&order_id='+order_id, '', response_goods_info , 'POST', 'JSON');
+        }
+    }
+
+    /**
+     * 隐藏订单商品
+     *
+     * @return void
+     */
+    function hide_order_goods(layer_id)
+    {
+        $layer_id = Utils.$(layer_id);
+        window.timer = window.setTimeout('$layer_id.style.display = "none"', 500);
+    }
+
+    /**
+     * 处理订单商品的Callback
+     *
+     * @return void
+     */
+    function response_goods_info(result)
+    {
+        if (result.error > 0)
+        {
+            alert(result.message);
+            hide_order_goods(show_goods_layer);
+            return;
+        }
+        if (typeof(goods_hash_table[result.content[0].order_id]) == 'undefined')
+        {
+            goods_hash_table[result.content[0].order_id] = result;
+        }
+        Utils.$(show_goods_layer).innerHTML = result.content[0].str;
+    }
+</script>
+{if $full_page}
+{include file="pagefooter.htm"}
+{/if}
