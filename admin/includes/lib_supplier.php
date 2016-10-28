@@ -70,6 +70,60 @@ function valid_parter(){
     make_json_result($ret);
 }
 
+function get_shipname_list(){
+    $sql = 'select shipping_id, shipping_name from ecs_shipping';
+    $result = $GLOBALS['db']->getAll($sql);
+    $ary = array();
+    if (count($result) > 0)
+    {
+        foreach ($result as $ship)
+        {
+            $ary[$ship['shipping_id']] = $ship['shipping_name'];
+        }
+    }
+    return $ary;
+}
+
+function get_supplier_order_list($supplier_id){
+
+    $where = " where supplier_id = {$supplier_id} ";
+    $filter['order_sn'] = empty($_REQUEST['order_sn']) ? '' : trim($_REQUEST['order_sn']);
+    $filter['start_time'] =  empty($_REQUEST['start_time']) ? '' : (strpos($_REQUEST['start_time'], '-') > 0 ?  local_strtotime($_REQUEST['start_time']) : $_REQUEST['start_time']);
+    $filter['end_time'] = empty($_REQUEST['end_time']) ? '' : (strpos($_REQUEST['end_time'], '-') > 0 ?  local_strtotime($_REQUEST['end_time']) : $_REQUEST['end_time']);
+    $filter['shipping_status']  = $_REQUEST['shipping_status'];
+
+//
+//    /* 关键字 */
+
+    if (!empty($filter['order_sn']))
+    {
+        $where .= " and (order_sn = '" . mysql_like_quote($filter['order_sn']) . "') ";
+    }
+    if (!empty($filter['start_time']))
+    {
+        $where .= " AND (add_time >= '".$filter['start_time']."')";
+    }
+    if (!empty($filter['end_time']))
+    {
+        $where .= " AND (add_time <= '".$filter['end_time']."')";
+    }
+    if (isset($filter['shipping_status']))
+    {
+        $where .= " and (shipping_status = '" . mysql_like_quote($filter['shipping_status']) . "') ";
+    }
+    /* 记录总数 */
+    $sql = "SELECT COUNT(*) FROM ecs_order_info AS g ".$where;
+    $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+    /* 分页大小 */
+    $filter = page_and_size($filter);
+    $sql = "select order_id, order_sn, add_time, consignee, mobile, zipcode,address,goods_amount,shipping_fee from ecs_order_info " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+
+    $row = $GLOBALS['db']->getAll($sql);
+
+    return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
+    return $result;
+}
+
 function get_supplier($id){
     $sql = "select * from rbc_supplier where id = '{$id}'";
     $return_array = $GLOBALS['db']->getRow($sql);
