@@ -282,6 +282,27 @@ function get_parters($id){
     return $return_array;
 }
 
+function parter_consume_list(){
+    $sql = "SELECT
+	t1.order_id,
+	t1.order_sn,
+	t2.name,
+	t2.mobile_phone,
+	t2.parter_emp_name,
+	t1.goods_amount,
+	t1.rbc_pay_way,
+	t1.add_time,
+	t1.seperate_status
+FROM
+	ecs_order_info t1,
+	ecs_users t2
+WHERE
+ t1.user_id = t2.user_id and
+	t1.parter_id = ''";
+    $result = $GLOBALS['db']->getAll($sql);
+    return $result;
+}
+
 function parter_emp_list($id){
     $where = " where  1=1 ";
     $filter['keyword']          = empty($_REQUEST['keyword']) ? '' : trim($_REQUEST['keyword']);

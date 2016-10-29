@@ -98,7 +98,7 @@
         <th>
           <input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号
         </th>
-        <th>商品</a></th>
+        <th>订单号</a></th>
         <th>用户姓名</a></th>
         <th>电话</a></th>
         <th>服务员工</a></th>
@@ -109,11 +109,15 @@
       <tr>
         {foreach from=$list item=obj}
       <tr>
-        <td><input type="checkbox" name="checkboxes[]"  value="{$obj.id}"/>{$obj.user_id}</td>
+        <td><input type="checkbox" name="checkboxes[]"  />{$obj.order_id}</td>
+        <td><span>{$obj.order_sn}</span></td>
         <td><span>{$obj.name}</span></td>
         <td><span>{$obj.mobile_phone}</span></td>
         <td><span>{$obj.parter_emp_name}</span></td>
-        <td><span>{$obj.vip}</span></td>
+        <td><span>{$obj.goods_amount}</span></td>
+        <td><span>{$obj.rbc_pay_way}</span></td>
+        <td><span>{$obj.add_time}</span></td>
+        <td><span>{$obj.seperate_status}</span></td>
         <td align="center">
           <a href="javascipt:void();" >详细</a>
           <!--<a href="parterAdmin.php?act=rbc_parter_user_detail&id={$obj.user_id}" >详细</a>-->

@@ -126,7 +126,9 @@ elseif($_REQUEST['act'] =='reset_parter_pwd'){
     }
 }
 elseif($_REQUEST['act'] =='rbc_parter_consume_list'){
+    $list = parter_consume_list();
     $smarty->assign('full_page', 1);
+    $smarty->assign('list', $list);
 
     $smarty->display('parter\rbc_parter_consume_list.htm');
 }
