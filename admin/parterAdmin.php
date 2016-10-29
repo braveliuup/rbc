@@ -125,6 +125,7 @@ elseif($_REQUEST['act'] =='reset_parter_pwd'){
         }
     }
 }
+
 elseif($_REQUEST['act'] =='rbc_parter_finance_list'){
     $smarty->assign('ur_here', '合作商报表');
     $list = parter_finance_list();
@@ -150,6 +151,33 @@ elseif($_REQUEST['act'] == 'query_parter_finance_list'){
     make_json_result($smarty->fetch('parter\rbc_parter_finance_list.htm'),'',
         array('filter' => $list['filter'], 'page_count' => $list['page_count']));
 }
+
+elseif($_REQUEST['act'] =='rbc_emp_finance_list'){
+    $smarty->assign('ur_here', '合作商员工报表');
+    $list = parter_emp_finance_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 1);
+
+    $smarty->assign('year_list', get_year_list());
+    $smarty->assign('month_list', get_month_list());
+    $smarty->assign('settlement_day', get_settlement_day($_SESSION['admin_id']));
+
+    $smarty->display('parter\rbc_emp_finance_list.htm');
+}
+elseif($_REQUEST['act'] == 'query_emp_finance_list'){
+    $list = parter_emp_finance_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 0);
+    make_json_result($smarty->fetch('parter\rbc_emp_finance_list.htm'),'',
+        array('filter' => $list['filter'], 'page_count' => $list['page_count']));
+}
+
 elseif($_REQUEST['act'] =='rbc_parter_consume_list'){
     $smarty->assign('ur_here', '消费信息管理');
     $list = parter_consume_list();

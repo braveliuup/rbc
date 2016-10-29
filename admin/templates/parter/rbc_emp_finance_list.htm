@@ -35,8 +35,7 @@
     <input id="settlement_day" type="hidden" value="{$settlement_day}"/>
     用户
     <input name="user_keyword" placeholder="昵称">
-    合作商员工查询
-    <input name="emp_keyword" placeholder="名称">
+
     <input type="submit" value="搜索" class="button" />
   </form>
 </div>
@@ -54,7 +53,6 @@
     listTable.filter = new Object;
     listTable.filter['order_sn'] = Utils.trim(document.forms['searchForm'].elements['order_sn'].value);
     listTable.filter['user_keyword'] = Utils.trim(document.forms['searchForm'].elements['user_keyword'].value);
-    listTable.filter['emp_keyword'] = Utils.trim(document.forms['searchForm'].elements['emp_keyword'].value);
     listTable.filter['start_time'] = Utils.trim(document.forms['searchForm'].elements['start_time_id'].value);
     listTable.filter['end_time'] = document.forms['searchForm'].elements['end_time'].value;
     listTable.filter['end_time'] = document.forms['searchForm'].elements['end_time'].value;
@@ -149,32 +147,21 @@
 
     <table border="1" cellpadding="3" cellspacing="1" >
       <tr>
-        <th rowspan="2"><input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号</th>
-        <th rowspan="2">订单编号</a></th>
-        <th rowspan="2">商品名称</a></th>
-        <th rowspan="2">订单日期</a></th>
-        <th rowspan="2">会员</a></th>
-        <th rowspan="2">合作商员工</th>
-        <th rowspan="2">合作商名称</th>
-        <th rowspan="2">单价</th>
-        <th rowspan="2">数量</th>
-        <th rowspan="2">小计</th>
-        <th rowspan="2">会员承担运费</th>
-        <th rowspan="2">会员付款金额</th>
-        <th rowspan="2">成本</th>
-        <th rowspan="2">公司承担运费</th>
-        <th rowspan="2">净利</th>
-        <th colspan="3">合作商</th>
-        <th colspan="2">员工</th>
-        <th rowspan="2">结算状态</th>
-      </tr>
-      <tr>
-        <th>合作商分成比</th>
-        <th>合作商分成额</th>
-        <th>合作商剩余利润</th>
+        <th ><input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号</th>
+        <th >订单编号</a></th>
+        <th >商品名称</a></th>
+        <th >订单日期</a></th>
+        <th >会员</a></th>
+        <th >合作商员工</th>
+        <th >合作商名称</th>
+        <th >单价</th>
+        <th >数量</th>
+        <th >小计</th>
         <th>员工分成比</th>
         <th>员工分成额</th>
+        <th >结算状态</th>
       </tr>
+
         {foreach from=$list item=obj}
       <tr>
         <td><input type="checkbox" name="checkboxes[]"  />{$obj.rec_id} </td>
@@ -187,14 +174,6 @@
         <td><span>{$obj.single_price}</span></td>
         <td><span>{$obj.goods_number}</span></td>
         <td><span>{$obj.total}</span></td>
-        <td><span>{$obj.shipping_cost}</span></td>
-        <td><span>{$obj.goods_price}</span></td>
-        <td><span>{$obj.xprice}</span></td>
-        <td><span>{$obj.company_shipping_cost}</span></td>
-        <td><span>{$obj.net_profit}</span></td>
-        <td><span>{$obj.parter_share_percent}</span></td>
-        <td><span>{$obj.parter_share}</span></td>
-        <td><span>{$obj.parter_residual_income}</span></td>
         <td><span>{$obj.emp_share_percent}</span></td>
         <td><span>{$obj.emp_share}</span></td>
         <td><span>{$obj.settlement_status}</span></td>
@@ -222,7 +201,7 @@
   function exportTable(){
     alert("导出列表数据，未实现");
   }
-  listTable.query = 'query_parter_finance_list';
+  listTable.query = 'query_emp_finance_list';
   listTable.recordCount = {$record_count};
   listTable.pageCount = {$page_count};
 
