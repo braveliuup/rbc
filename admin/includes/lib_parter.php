@@ -208,6 +208,10 @@ function valid_parter(){
      $ret = $GLOBALS['db']->query($sql) or make_json_error($GLOBALS['db']->error());
     make_json_result($ret);
 }
+function change_socre(){
+    $sql = "update ecs_users set vip = vip + {$_REQUEST['score']} where user_id = {$_REQUEST['userId']}";
+    make_json_result($GLOBALS['db']->query($sql));
+}
 function assign_emp_to_user(){
     $sql = "update ecs_users set parter_emp_id = {$_REQUEST['empId']},parter_emp_name = (select staffName from rbc_parter_staff_info where id = {$_REQUEST['empId']}) where user_id = {$_REQUEST['userId']}";
     make_json_result($GLOBALS['db']->query($sql));

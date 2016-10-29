@@ -106,6 +106,9 @@ else if($_REQUEST['act'] ==  'ajax_parter_emp_list'){
 else if($_REQUEST['act'] ==  'assign_emp_to_user'){
     assign_emp_to_user();
 }
+else if($_REQUEST['act'] == 'change_score'){
+    change_socre();
+}
 elseif($_REQUEST['act'] == 'rbc_parter_pwd_reset'){
     $smarty->display('parter\rbc_parter_pwd_reset.htm');
 }

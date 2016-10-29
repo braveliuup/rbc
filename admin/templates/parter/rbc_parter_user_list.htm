@@ -120,7 +120,7 @@
           <!--<a href="parterAdmin.php?act=rbc_parter_user_detail&id={$obj.user_id}" >详细</a>-->
           <a href="javascript:showEmpAssign({$obj.user_id});" >{if $obj.is_assign eq '已分配'}重新分配{else}分配{/if}</a>
           <!--<a href="parterAdmin.php?act=edit_parter_emp&id={$obj.user_id}" >{if $obj.is_assign eq '已分配'}重新分配{else}分配{/if}</a>-->
-          <a href="javascript:validUser({$obj.user_id})" >积分管理</a>
+          <a href="javascript:showScoreAssign({$obj.user_id},'{$obj.name}','{$obj.mobile_phone}')" >积分管理</a>
           <!--<a href="#parter.php?act=point_shop&id={$obj.id}">查看积分商城</a>-->
         </td>
       </tr>
@@ -156,17 +156,64 @@
   listTable.filter.{$key} = '{$item}';
   {/foreach}
 
-  function validUser(id){
-//    function callback(result){
-//      console.log(result)
-//      listTable.loadList();
-//    }
-//    Ajax.call('parterAdmin.php?act=valid', "id="+id, callback, "POST", "JSON");
-  }
 </script>
 <script src="js/area.js"></script>
 <script src="js/birth.js"></script>
 {if $full_page}
+
+<div style="position:absolute;z-index: 999; border:1px solid; padding: 20px; width: 240px; height: 100px; display: none;background: #f3f3f3;" id="score_assign_div">
+  <table>
+    <tr>
+      <td>姓名</td>
+      <td id="name_td"></td>
+    </tr>
+    <tr>
+      <td>联系电话</td>
+      <td id="tel_td"></td>
+    </tr>
+    <tr>
+      <td>积分操作</td>
+      <td><input id="scoreInput" /> <br>提示：增加填+1 减少填-1 </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="button" class="button" value="修改" onclick="assignScore()"/>
+      </td>
+      <td>
+        <input type="button" class="button" value="取消" onclick="hideScoreAssign()"/>
+      </td>
+    </tr>
+  </table>
+</div>
+<script>
+  var scoreDiv = Utils.$('score_assign_div');
+  function showScoreAssign(userId,name, tel){
+    scoreDiv.style.display ='block';
+    scoreDiv.style.left = (scoreDiv.parentNode.clientWidth - scoreDiv.clientWidth)-40  + 'px';
+    scoreDiv.style.top = (scoreDiv.parentNode.clientHeight - scoreDiv.clientHeight)  + 'px';
+    scoreDiv.setAttribute('userId', userId);
+    Utils.$('name_td').innerHTML = name;
+    Utils.$('tel_td').innerHTML = tel;
+    hideEmpAssign();
+  }
+  function hideScoreAssign(){
+    scoreDiv.style.display = 'none';
+  }
+
+  function assignScore(){
+    var val = Utils.$('scoreInput').value;
+    var callback = function(result){
+      if(result.error > 0){
+        alter('失败');
+        return;
+      }
+      listTable.loadList();
+      hideScoreAssign();
+    }
+    Ajax.call('parterAdmin.php?act=change_score','userId='+scoreDiv.getAttribute('userId')+"&score="+val, callback, 'POST','JSON');
+  }
+</script>
+
 <style>
   .emp_assign_table{
     border-collapse: collapse;
@@ -206,6 +253,7 @@
     emp_assign_div.style.left = (emp_assign_div.parentNode.clientWidth - emp_assign_div.clientWidth) / 2 + 'px';
     emp_assign_div.style.top = (emp_assign_div.parentNode.clientHeight - emp_assign_div.clientHeight) / 2 + 'px';
     emp_assign_div.setAttribute('userId', userId);
+    hideScoreAssign();
   }
   function hideEmpAssign(){
     emp_assign_div.style.display  = 'none';
