@@ -14,19 +14,19 @@
     <table cellspacing="10">
       <tr>
         <td colspan="3">
-          <span >VIP会员人数：100</span>
+          <span >VIP会员人数：{$rbc_parter_uservip_count}</span>
         </td>
       </tr>
       <tr>
         <td >
-          <span >本周期成交金额：10002</span>
+          <span >本周期成交金额：{$rbc_parter_user_amount}</span>
         </td>
 
         <td>
-          <span >本周期分成金额：5000</span>
+          <span >本周期分成金额：{$rbc_parter_share}</span>
         </td>
         <td >
-         <span > 本周期员工分成金额：2310</span>
+         <span > 本周期员工分成金额：{$rbc_parter_emp_share}</span>
         </td>
       </tr>
     </table>
@@ -54,7 +54,7 @@
       </tr><tr >
         <td>合作商地址:</td>
         <td>
-          <input readonly id="partnersAddress" name='partnersAddress' value='{$rbc_parter.partnersAddress}'/>
+          <input readonly id="areaComponent" data="partnersAddress" name='partnersAddress' value='{$rbc_parter.partnersAddress}'/>
           </td>
       </tr><tr >
         <td>详细地址:</td>

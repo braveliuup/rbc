@@ -208,6 +208,69 @@ function valid_parter(){
      $ret = $GLOBALS['db']->query($sql) or make_json_error($GLOBALS['db']->error());
     make_json_result($ret);
 }
+function assign_emp_to_user(){
+    $sql = "update ecs_users set parter_emp_id = {$_REQUEST['empId']},parter_emp_name = (select staffName from rbc_parter_staff_info where id = {$_REQUEST['empId']}) where user_id = {$_REQUEST['userId']}";
+    make_json_result($GLOBALS['db']->query($sql));
+}
+function ajax_parter_emp_list(){
+    $where=" where parter_id = {$_SESSION['admin_id']} and state = '可用' ";
+    if (!empty($_REQUEST['keyword']))
+    {
+        $where .= " and (staffID LIKE '%" . mysql_like_quote($_REQUEST['keyword']) . "%' OR loginID LIKE '%" . mysql_like_quote($_REQUEST['keyword']) . "%' OR staffName LIKE '%" . mysql_like_quote($_REQUEST['keyword']) . "%' OR phone LIKE '%" . mysql_like_quote($_REQUEST['keyword']) . "%')";
+    }
+    $sql = "select id,staffID,loginID,staffName,sex,phone,commission from rbc_parter_staff_info ".$where;
+    return $GLOBALS['db']->getAll($sql);
+}
+
+function get_parter_uservip_count($id){
+    $sql = "select count(1) from ecs_users where parter_id = {$id}";
+    return $GLOBALS['db']->getOne($sql);
+}
+
+function get_parter_user_amount($parter_id,$paymentDate){
+    $where = "";
+    if($paymentDate){
+        $start_time = get_round_start($paymentDate);
+        $end_time = strtotime('+1 month', $start_time);
+        $where = " and t1.pay_time >= {$start_time} and t1.pay_time <= {$end_time}";
+    }
+    $sql = "select sum(money_paid) total_amount from ecs_order_info t1,ecs_users t2 where t1.user_id = t2.user_id and t2.parter_id =  {$parter_id}".$where;
+    $result = $GLOBALS['db']->getOne($sql);
+    return $result;
+}
+
+function get_parter_share($parter_id,$paymentDate){
+    $where = "";
+    if($paymentDate){
+        $start_time = get_round_start($paymentDate);
+        $end_time = strtotime('+1 month', $start_time);
+        $where = " and t1.pay_time >= {$start_time} and t1.pay_time <= {$end_time}";
+    }
+    $sql = "select sum(money_paid) total_amount from ecs_order_info t1,ecs_users t2 where t1.user_id = t2.user_id and t2.parter_id =  {$parter_id}".$where;
+    $result = $GLOBALS['db']->getOne($sql);
+    return $result;
+}
+
+function get_parter_emp_share($parter_id,$paymentDate){
+    $where = "";
+    if($paymentDate){
+        $start_time = get_round_start($paymentDate);
+        $end_time = strtotime('+1 month', $start_time);
+        $where = " and t1.pay_time >= {$start_time} and t1.pay_time <= {$end_time}";
+    }
+
+    $sql = "select cast(round(SUM(t3.commission*t1.money_paid*0.01), 2) as DECIMAL(10,2)) rbc_parter_emp_share from ecs_order_info t1, ecs_users t2, rbc_parter_staff_info t3 where t2.parter_emp_id = t3.id and t1.user_id = t2.user_id and t3.parter_id = {$parter_id}".$where;
+    $result = $GLOBALS['db']->getOne($sql);
+    return $result;
+}
+
+function get_round_start($day){
+    $round_start = strtotime(Date('Y').'-'.Date('m').'-'.$day);
+    if(Date('d') < $day){
+        $round_start = strtotime('-1 month', $round_start);
+    }
+    return $round_start;
+}
 
 function get_parters($id){
     $sql = "select * from rbc_parter where id = '{$id}'";

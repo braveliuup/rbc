@@ -91,7 +91,20 @@ elseif($_REQUEST['act'] == 'parter_info')
     $partersInfo = get_parters($_SESSION['admin_id']);
     $smarty->assign('rbc_parter', $partersInfo);
     $smarty->assign('readonly', 'readonly');
+
+    $smarty->assign('rbc_parter_uservip_count', get_parter_uservip_count($_SESSION['admin_id']));
+    $smarty->assign('rbc_parter_user_amount',get_parter_user_amount($_SESSION['admin_id'], $partersInfo['paymentDate']) );
+    $parter_share = round(0.01* $partersInfo['parter_share_percent']*get_parter_share($_SESSION['admin_id'], $partersInfo['paymentDate']), 2);
+    $smarty->assign('rbc_parter_share',$parter_share );
+    $smarty->assign('rbc_parter_emp_share', get_parter_emp_share($_SESSION['admin_id'], $partersInfo['paymentDate']));
+
     $smarty->display('parter\rbc_parter_info.htm');
+}
+else if($_REQUEST['act'] ==  'ajax_parter_emp_list'){
+    make_json_result(ajax_parter_emp_list());
+}
+else if($_REQUEST['act'] ==  'assign_emp_to_user'){
+    assign_emp_to_user();
 }
 elseif($_REQUEST['act'] == 'rbc_parter_pwd_reset'){
     $smarty->display('parter\rbc_parter_pwd_reset.htm');

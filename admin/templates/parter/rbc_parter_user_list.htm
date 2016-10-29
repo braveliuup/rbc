@@ -29,6 +29,8 @@
   </form>
 </div>
 <script language="JavaScript">
+  listTable.query = 'query_user';
+
   function searchParters()
   {
     birthCom.init();
@@ -40,7 +42,6 @@
     listTable.filter['kfilteris_assign'] = (document.forms['searchForm'].elements['kfilteris_assign'].value);
     listTable.filter['kfilterbirth'] = (document.forms['searchForm'].elements['kfilterbirth'].value);
     listTable.filter['page'] = 1;
-    listTable.query = 'query_user';
     listTable.loadList();
   }
 </script>
@@ -115,9 +116,9 @@
         <td><span>{$obj.parter_emp_name}</span></td>
         <td><span>{$obj.vip}</span></td>
         <td align="center">
-          <a href="javascipt:void();" >详细</a>
+          <a href="javascript:void();" >详细</a>
           <!--<a href="parterAdmin.php?act=rbc_parter_user_detail&id={$obj.user_id}" >详细</a>-->
-          <a href="javascipt:void();" >{if $obj.is_assign eq '已分配'}重新分配{else}分配{/if}</a>
+          <a href="javascript:showEmpAssign({$obj.user_id});" >{if $obj.is_assign eq '已分配'}重新分配{else}分配{/if}</a>
           <!--<a href="parterAdmin.php?act=edit_parter_emp&id={$obj.user_id}" >{if $obj.is_assign eq '已分配'}重新分配{else}分配{/if}</a>-->
           <a href="javascript:validUser({$obj.user_id})" >积分管理</a>
           <!--<a href="#parter.php?act=point_shop&id={$obj.id}">查看积分商城</a>-->
@@ -142,6 +143,7 @@
   </div>
 </form>
 
+
 <script type="text/javascript">
   function exportTable(){
     alert("导出列表数据，未实现");
@@ -165,5 +167,99 @@
 <script src="js/area.js"></script>
 <script src="js/birth.js"></script>
 {if $full_page}
+<style>
+  .emp_assign_table{
+    border-collapse: collapse;
+  }
+</style>
+<div style="position:absolute;z-index: 999;margin:auto; border:1px solid; padding: 20px; width: 50%; height: 50%;overflow:scroll; overflow-x:hidden; display: none;background: #f3f3f3;" id="emp_assign_div">
+  <div>
+    <input id="emp_search_input" placeholder="员工编号/登录名/姓名/手机号" style="width:180px" />
+    <input type="button" class="button" onclick="searchEmp()" value="查询"/>
+   <a style="float: right;cursor: pointer;" onclick="hideEmpAssign()"><img src="images/btn_close.gif" title="关闭"/> </a>
+  </div>
+  <br>
+  <div>
+    <table id="emp_assign_table" align="enter" cellpadding="4" border="1" class="emp_assign_table">
+      <thead>
+      <tr>
+        <th>序号</th>
+        <th>员工编号</th>
+        <th>登录号</th>
+        <th>姓名</th>
+        <th>性别</th>
+        <th>手机号</th>
+        <th>提成比例</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+  var emp_assign_div = document.getElementById('emp_assign_div');
+  function showEmpAssign(userId){
+    emp_assign_div.style.display  = 'inline';
+    emp_assign_div.style.left = (emp_assign_div.parentNode.clientWidth - emp_assign_div.clientWidth) / 2 + 'px';
+    emp_assign_div.style.top = (emp_assign_div.parentNode.clientHeight - emp_assign_div.clientHeight) / 2 + 'px';
+    emp_assign_div.setAttribute('userId', userId);
+  }
+  function hideEmpAssign(){
+    emp_assign_div.style.display  = 'none';
+  }
+
+  function assignEmp(empId){
+    var userId = emp_assign_div.getAttribute('userId'); // once do just one thing keep simple principle
+    Ajax.call('parterAdmin.php?act=assign_emp_to_user', 'userId='+userId+"&empId="+empId, function(result){
+      if(result.error>0){
+        return;
+      }else{
+        listTable.loadList();
+        hideEmpAssign();
+      }
+    },'POST','JSON');
+  }
+
+  var emp_list_fields = ['id','staffID','loginID','staffName','sex','phone','commission'];
+  var last_search_value = "";
+  function searchEmp(){
+    var keyword = Utils.trim(Utils.$('emp_search_input').value);
+    var tbl = Utils.$('emp_assign_table');
+    var tbody =  tbl.getElementsByTagName('tbody')[0];
+    var setTbody = function (rows){
+      for(var i =0 ; i< rows.length; i++){
+        var tr = document.createElement('tr');
+        for(var j=0; j < emp_list_fields.length; j++){
+          var td = document.createElement('td');
+          td.innerHTML = rows[i][emp_list_fields[j]];
+          tr.appendChild(td);
+        }
+        var td = document.createElement('td');
+        td.innerHTML = '<a href="javascript:assignEmp('+rows[i].id+');">选择</a>';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+    }
+    var clearTbody = function (){
+      for(var i = tbody.rows.length-1; i>=0 ;i--){
+        tbody.rows[i].remove();
+      }
+    }
+    var callback = function(result) {
+      var json = JSON.parse(result);
+      if (json.error > 0) {
+        alert('查询数据失败');
+        return;
+      }
+      var rows = json.content;
+      clearTbody();
+      setTbody(rows);
+    }
+    Ajax.call('parterAdmin.php?act=ajax_parter_emp_list', 'keyword='+keyword, callback, 'GET', 'POST');
+  }
+</script>
 {include file="pagefooter.htm"}
 {/if}
