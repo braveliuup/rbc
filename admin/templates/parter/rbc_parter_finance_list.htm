@@ -1,0 +1,234 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+{if $full_page}
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,../js/calendar.php,listtable.js"}
+<link href="../js/calendar/calendar.css" rel="stylesheet" type="text/css" />
+
+<div class="form-div">
+  <form action="javascript:searchParters()" name="searchForm">
+    <img src="images/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
+    订单查询<input name="order_sn" type="text" id="order_sn" size="15" placeholder="订单编号/商品名称">
+
+    订单日期 从<input type="text" name="start_time" maxlength="60" size="20" readonly="readonly" id="start_time_id" />
+    <input name="start_time_btn" type="button" id="start_time_btn" onclick="return showCalendar('start_time_id', '%Y-%m-%d %H:%M', '24', false, 'start_time_btn');" value="{$lang.btn_select}" class="button"/>
+    到
+    <input type="text" name="end_time" maxlength="60" size="20" readonly="readonly" id="end_time_id" />
+    <input name="end_time_btn" type="button" id="end_time_btn" onclick="return showCalendar('end_time_id', '%Y-%m-%d %H:%M', '24', false, 'end_time_btn');" value="{$lang.btn_select}" class="button"/>
+    结算周期
+    <select id="settle_start_y" >
+      <option value="">请选择</option>
+      {html_options options=$year_list }
+    </select>年
+    <select id="settle_start_m">
+      <option value="">请选择</option>
+      {html_options options=$month_list }
+    </select>月
+    --
+    <select id="settle_end_y">
+      <option value="">请选择</option>
+      {html_options options=$year_list }
+    </select>年
+    <select id="settle_end_m">
+      <option value="">请选择</option>
+      {html_options options=$month_list }
+    </select>月
+    <input id="settlement_day" type="hidden" value="{$settlement_day}"/>
+    用户
+    <input name="user_keyword" placeholder="昵称">
+    合作商员工查询
+    <input name="emp_keyword" placeholder="名称">
+    <input type="submit" value="搜索" class="button" />
+  </form>
+</div>
+<table class="ord_state_query" border="1"   >
+  <tr>
+    <td><a href="javascript:searchParters()">全部</a></td>
+    <td><a href="javascript:searchParters('settlement_status','未结算')" >未结算</a></td>
+    <td><a href="javascript:searchParters('settlement_status','已结算')" > 已结算</a></td>
+  </tr>
+</table>
+<script language="JavaScript">
+
+  function searchParters(key, value)
+  {
+    listTable.filter = new Object;
+    listTable.filter['order_sn'] = Utils.trim(document.forms['searchForm'].elements['order_sn'].value);
+    listTable.filter['start_time'] = Utils.trim(document.forms['searchForm'].elements['start_time_id'].value);
+    listTable.filter['end_time'] = document.forms['searchForm'].elements['end_time'].value;
+    listTable.filter['end_time'] = document.forms['searchForm'].elements['end_time'].value;
+    var settle_start_y = document.forms['searchForm'].elements['settle_start_y'];
+    var settle_start_m = document.forms['searchForm'].elements['settle_start_m'];
+    var settle_end_y = document.forms['searchForm'].elements['settle_end_y'];
+    var settle_end_m = document.forms['searchForm'].elements['settle_end_m'];
+    var startY = settle_start_y.options[settle_start_y.selectedIndex].value;
+    var startM = settle_start_m.options[settle_start_m.selectedIndex].value;
+    var endY = settle_end_y.options[settle_end_y.selectedIndex].value;
+    var endM = settle_end_m.options[settle_end_m.selectedIndex].value;
+    var settle_start_time = startY + '-' + startM;
+    var settle_end_time = endY + '-' + endM;
+    if( settle_start_time.length != 1 && settle_start_time.length < 6){
+      alert('年和月必须同时选择')
+      return ;
+    }
+    if( settle_end_time.length != 1 && settle_end_time.length < 6){
+      alert('年和月必须同时选择')
+      return ;
+    }
+    listTable.filter['settle_start_time'] = settle_start_time!='-'? (settle_start_time + '-' + document.getElementById('settlement_day').value) : '';
+    listTable.filter['settle_end_time'] = settle_end_time !='-'? (settle_end_time+ '-' + document.getElementById('settlement_day').value) : '';
+    listTable.filter['page'] = 1;
+    listTable.filter[key] = value;
+    listTable.loadList();
+  }
+</script>
+<style>
+  ul
+  {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+  }
+  ul li
+  {
+  }
+
+  #displayItemComponent{
+    position:absolute;
+    background-color: #f7f7f7;
+    margin-left:8px;
+    padding:0 20px 10px 20px;
+    display:none;
+  }
+
+</style>
+<div  id="displayItemComponent">
+  <ul >
+    <li><input type="checkbox"/>字段 </li>
+  </ul>
+  <hr width="100%">
+  <input type="button" value="确定" onclick="initDisplayItem()"/>
+  <input type="button" value="取消" onclick="hideFieldList()"/>
+</div>
+<script>
+  var div =  document.getElementById('displayItemComponent');
+
+  function showFieldList(){
+    alert('未实现');
+    return;
+    div.style.display = 'block';
+  }
+
+  function hideFieldList(){
+    div.style.display = 'none';
+  }
+
+  function initDisplayItem() {
+    hideFieldList();
+  }
+</script>
+{/if}
+<style>
+  .list-div table{
+    border-collapse : collapse;
+  }
+  .ord_state_query{
+    border-collapse:collapse;
+  }
+  .ord_state_query td{
+    padding-left:20px;
+    padding-right:20px;
+    padding-top:5px;
+    padding-bottom:5px;
+  }
+</style>
+<form method="post" action="javascript:exportTable()" name="listForm" >
+  <!-- start parter list -->
+  <div class="list-div" id="listDiv">
+
+    <table border="1" cellpadding="3" cellspacing="1" >
+      <tr>
+        <th rowspan="2"><input onclick='listTable.selectAll(this, "checkboxes")' type="checkbox"  />序号</th>
+        <th rowspan="2">订单编号</a></th>
+        <th rowspan="2">商品名称</a></th>
+        <th rowspan="2">订单日期</a></th>
+        <th rowspan="2">会员</a></th>
+        <th rowspan="2">合作商员工</th>
+        <th rowspan="2">合作商名称</th>
+        <th rowspan="2">单价</th>
+        <th rowspan="2">数量</th>
+        <th rowspan="2">小计</th>
+        <th rowspan="2">会员承担运费</th>
+        <th rowspan="2">会员付款金额</th>
+        <th rowspan="2">成本</th>
+        <th rowspan="2">公司承担运费</th>
+        <th rowspan="2">净利</th>
+        <th colspan="3">合作商</th>
+        <th colspan="2">员工</th>
+        <th rowspan="2">结算状态</th>
+      </tr>
+      <tr>
+        <th>合作商分成比</th>
+        <th>合作商分成额</th>
+        <th>合作商剩余利润</th>
+        <th>员工分成比</th>
+        <th>员工分成额</th>
+      </tr>
+        {foreach from=$list item=obj}
+      <tr>
+        <td><input type="checkbox" name="checkboxes[]"  />{$obj.rec_id} </td>
+        <td><span>{$obj.order_sn}</span></td>
+        <td><span>{$obj.goods_name}</span></td>
+        <td><span>{$obj.order_time}</span></td>
+        <td><span>{$obj.user_name}</span></td>
+        <td><span>{$obj.emp_name}</span></td>
+        <td><span>{$obj.parter_name}</span></td>
+        <td><span>{$obj.single_price}</span></td>
+        <td><span>{$obj.goods_number}</span></td>
+        <td><span>{$obj.total}</span></td>
+        <td><span>{$obj.shipping_cost}</span></td>
+        <td><span>{$obj.goods_price}</span></td>
+        <td><span>{$obj.xprice}</span></td>
+        <td><span>{$obj.company_shipping_cost}</span></td>
+        <td><span>{$obj.net_profit}</span></td>
+        <td><span>{$obj.parter_share_percent}</span></td>
+        <td><span>{$obj.parter_share}</span></td>
+        <td><span>{$obj.parter_residual_income}</span></td>
+        <td><span>{$obj.emp_share_percent}</span></td>
+        <td><span>{$obj.emp_share}</span></td>
+        <td><span>{$obj.settlement_status}</span></td>
+      </tr>
+      {foreachelse}
+      <tr><td class="no-records" colspan="10">{$lang.no_records}</td></tr>
+      {/foreach}
+    </table>
+    <!-- end parter list -->
+
+    <!-- 分页 -->
+    <table id="page-table" cellspacing="0">
+      <tr>
+        <td align="right" nowrap="true">
+          {include file="page.htm"}
+        </td>
+      </tr>
+    </table>
+
+    <input type="submit" value="选择导出" id="btnSubmit" name="btnSubmit" class="button" />
+  </div>
+</form>
+
+<script type="text/javascript">
+  function exportTable(){
+    alert("导出列表数据，未实现");
+  }
+  listTable.query = 'query_parter_finance_list';
+  listTable.recordCount = {$record_count};
+  listTable.pageCount = {$page_count};
+
+  {foreach from=$filter item=item key=key}
+  listTable.filter.{$key} = '{$item}';
+  {/foreach}
+
+</script>
+{if $full_page}
+{include file="pagefooter.htm"}
+{/if}

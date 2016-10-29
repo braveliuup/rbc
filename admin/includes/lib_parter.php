@@ -282,6 +282,86 @@ function get_parters($id){
     return $return_array;
 }
 
+function parter_finance_list(){
+    $where = " where parter_id = {$_SESSION['admin_id']}";
+
+     $filter['order_sn'] = empty($_REQUEST['order_sn']) ? '' : trim($_REQUEST['order_sn']);
+    $filter['start_time'] =  empty($_REQUEST['start_time']) ? '' : (strpos($_REQUEST['start_time'], '-') > 0 ?  local_strtotime($_REQUEST['start_time']) : $_REQUEST['start_time']);
+    $filter['end_time'] = empty($_REQUEST['end_time']) ? '' : (strpos($_REQUEST['end_time'], '-') > 0 ?  local_strtotime($_REQUEST['end_time']) : $_REQUEST['end_time']);
+    $filter['settle_start_time'] = empty($_REQUEST['settle_start_time']) ? '' : (strpos($_REQUEST['settle_start_time'], '-') > 0 ?  local_strtotime($_REQUEST['settle_start_time']) : $_REQUEST['settle_start_time']);
+    $filter['settle_end_time'] = empty($_REQUEST['settle_end_time']) ? '' : (strpos($_REQUEST['settle_end_time'], '-') > 0 ?  local_strtotime($_REQUEST['settle_end_time']) : $_REQUEST['settle_end_time']);
+    $filter['settlement_status']  = empty($_REQUEST['settlement_status']) ? '' : trim($_REQUEST['settlement_status']);
+    $filter['user_keyword']  =empty($_REQUEST['user_keyword']) ? '' : trim($_REQUEST['user_keyword']);
+    $filter['emp_keyword']  = empty($_REQUEST['emp_keyword']) ? '' : trim($_REQUEST['emp_keyword']);
+////
+////    /* 关键字 */
+//
+    if (!empty($filter['order_sn']))
+    {
+        $where .= " and (order_sn = '" . mysql_like_quote($filter['order_sn']) . "' or goods_name like '%".mysql_like_quote($filter['order_sn']) ."%') ";
+    }
+    if (!empty($filter['user_keyword']))
+    {
+        $where .= " and (user_name like '%" . mysql_like_quote($filter['user_keyword']) . "%') ";
+    }
+    if (!empty($filter['emp_keyword']))
+    {
+        $where .= " and (emp_name like '%".mysql_like_quote($filter['emp_keyword']) ."%') ";
+    }
+    if (!empty($filter['start_time']))
+    {
+        $where .= " AND (order_time >= '".$filter['start_time']."')";
+    }
+    if (!empty($filter['end_time']))
+    {
+        $where .= " AND (order_time <= '".$filter['end_time']."')";
+    }
+    if (!empty($filter['settle_start_time']))
+    {
+        $where .= " AND (order_time >= '".$filter['settle_start_time']."')";
+    }
+    if (!empty($filter['settle_end_time']))
+    {
+        $where .= " AND (order_time <= '".$filter['settle_end_time']."')";
+    }
+    if (!empty($filter['settlement_status']))
+    {
+        $where .= " and (settlement_status = '" . mysql_like_quote($filter['settlement_status']) . "') ";
+    }
+
+    /* 记录总数 */
+    $sql = "SELECT count(1) FROM ecs_order_goods  ".$where;
+    $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+    /* 分页大小 */
+    $filter = page_and_size($filter);
+    $sql = "SELECT
+            rec_id,
+            order_sn,
+            goods_name,
+            order_time,
+            user_name,
+            emp_name,
+            parter_name,
+            single_price,
+            goods_number,
+            single_price * goods_number total,
+            shipping_cost,
+            goods_price,
+            xprice,
+            company_shipping_cost,
+            net_profit,
+            parter_share_percent,
+            parter_share,
+            parter_residual_income,
+            emp_share_percent,
+            emp_share,
+            settlement_status
+        FROM
+            ecs_order_goods".$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";
+    $row = $GLOBALS['db']->getAll($sql);
+    return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
+}
+
 function parter_consume_list(){
     $where = " and t1.parter_id = {$_SESSION['admin_id']}";
 
@@ -352,7 +432,7 @@ function parter_consume_list(){
             ecs_order_info t1,
             ecs_users t2
         WHERE
-         t1.user_id = t2.user_id".$where;
+         t1.user_id = t2.user_id".$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";
     $row = $GLOBALS['db']->getAll($sql);
     return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
 }
@@ -381,7 +461,7 @@ function parter_emp_list($id){
     $filter['record_count'] = $GLOBALS['db']->getOne($sql);
     /* 分页大小 */
     $filter = page_and_size($filter);
-    $sql = "select * from rbc_parter_staff_info " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";;
+    $sql = "select * from rbc_parter_staff_info " .$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";
 
     $row = $GLOBALS['db']->getAll($sql);
 
@@ -445,6 +525,29 @@ function get_consignee_addr_list(){
     $sql = "select *,(case when concat(tel_prefix,'-',tel_main,'-',tel_suffix) = '--' then '' else  concat(tel_prefix,'-',tel_main,'-',tel_suffix) end) telconcat,(select group_concat(region_name SEPARATOR ' ') from ecs_region where region_id = t.country or region_id = t.province or region_id = t.city or region_id = t.district) as region from ecs_user_address t where user_id = '{$_SESSION["admin_code"]}' order by is_default desc";
     $result = $GLOBALS['db']->getAll($sql);
     return $result;
+}
+
+function get_year_list(){
+    $ary = array();
+    $y = Date("Y");
+    for($i = 0; $i < 5; $i++){
+        $ary[$y-$i] = $y-$i;
+    }
+    return $ary;
+
+}
+function get_month_list(){
+    $ary = array();
+    $i = 0 ;
+    while($i<12){
+        $i++;
+        $ary[$i] = $i;
+    }
+    return $ary;
+}
+function get_settlement_day($id){
+    $sql = "select paymentDate from rbc_parter where id = {$id}";
+    return $GLOBALS['db']->getOne($sql);
 }
 
 ?>
