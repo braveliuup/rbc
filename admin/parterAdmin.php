@@ -126,11 +126,25 @@ elseif($_REQUEST['act'] =='reset_parter_pwd'){
     }
 }
 elseif($_REQUEST['act'] =='rbc_parter_consume_list'){
+    $smarty->assign('ur_here', '消费信息管理');
     $list = parter_consume_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
     $smarty->assign('full_page', 1);
-    $smarty->assign('list', $list);
 
     $smarty->display('parter\rbc_parter_consume_list.htm');
+}
+elseif($_REQUEST['act'] == 'query_consume_list'){
+    $list = parter_consume_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 0);
+    make_json_result($smarty->fetch('parter\rbc_parter_consume_list.htm'),'',
+        array('filter' => $list['filter'], 'page_count' => $list['page_count']));
 }
 else if($_REQUEST['act'] == 'rbc_parter_user_list')
 {

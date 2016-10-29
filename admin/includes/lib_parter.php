@@ -283,24 +283,78 @@ function get_parters($id){
 }
 
 function parter_consume_list(){
+    $where = " and t1.parter_id = {$_SESSION['admin_id']}";
+
+    $filter['goods_name'] = empty($_REQUEST['goods_name']) ? '' : trim($_REQUEST['goods_name']);
+    $filter['parter_emp_name'] = empty($_REQUEST['parter_emp_name']) ? '' : trim($_REQUEST['parter_emp_name']);
+    $filter['sex'] = empty($_REQUEST['sex']) ? '' : trim($_REQUEST['sex']);
+    $filter['is_assign'] = empty($_REQUEST['is_assign']) ? '' : trim($_REQUEST['is_assign']);
+    $filter['start_amount'] = empty($_REQUEST['start_amount']) ? '' : trim($_REQUEST['start_amount']);
+    $filter['end_amount'] = empty($_REQUEST['end_amount']) ? '' : trim($_REQUEST['end_amount']);
+    $filter['start_time'] =  empty($_REQUEST['start_time']) ? '' : (strpos($_REQUEST['start_time'], '-') > 0 ?  local_strtotime($_REQUEST['start_time']) : $_REQUEST['start_time']);
+    $filter['end_time'] = empty($_REQUEST['end_time']) ? '' : (strpos($_REQUEST['end_time'], '-') > 0 ?  local_strtotime($_REQUEST['end_time']) : $_REQUEST['end_time']);
+
+    if (!empty($filter['goods_name']))
+    {
+        $where .= " and (b.order_sn = '" . mysql_like_quote($filter['order_sn']) . "' or a.goods_name like '%".mysql_like_quote($filter['order_sn']) ."%') ";
+    }
+    if (!empty($filter['parter_emp_name']))
+    {
+        $where .= " and (t2.parter_emp_name like '%" . mysql_like_quote($filter['parter_emp_name']) . "%') ";
+    }
+    if (!empty($filter['sex']))
+    {
+        $where .= " and (t2.sex = '" . mysql_like_quote($filter['sex']) . "') ";
+    }
+    if (!empty($filter['is_assign']))
+    {
+        $where .= " and (t1.is_assign = '" . mysql_like_quote($filter['is_assign']) . "' ) ";
+    }
+    if (!empty($filter['start_amount']))
+    {
+        $where .= " and (t1.goods_amount >= {$filter['start_amount']} ) ";
+    }
+    if (!empty($filter['end_amount']))
+    {
+        $where .= " and (t1.end_amount >= {$filter['end_amount']} ) ";
+    }
+    if (!empty($filter['start_time']))
+    {
+        $where .= " AND (t1.add_time >= '".$filter['start_time']."')";
+    }
+    if (!empty($filter['end_time']))
+    {
+        $where .= " AND (t1.add_time <= '".$filter['end_time']."')";
+    }
+
+    /* 记录总数 */
     $sql = "SELECT
-	t1.order_id,
-	t1.order_sn,
-	t2.name,
-	t2.mobile_phone,
-	t2.parter_emp_name,
-	t1.goods_amount,
-	t1.rbc_pay_way,
-	t1.add_time,
-	t1.seperate_status
-FROM
-	ecs_order_info t1,
-	ecs_users t2
-WHERE
- t1.user_id = t2.user_id and
-	t1.parter_id = ''";
-    $result = $GLOBALS['db']->getAll($sql);
-    return $result;
+           count(1)
+        FROM
+            ecs_order_info t1,
+            ecs_users t2
+        WHERE
+         t1.user_id = t2.user_id ".$where;
+    $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+    /* 分页大小 */
+    $filter = page_and_size($filter);
+    $sql = "SELECT
+            t1.order_id,
+            t1.order_sn,
+            t2.name,
+            t2.mobile_phone,
+            t2.parter_emp_name,
+            t1.goods_amount,
+            t1.rbc_pay_way,
+            FROM_UNIXTIME(t1.add_time) add_time,
+            t1.seperate_status
+        FROM
+            ecs_order_info t1,
+            ecs_users t2
+        WHERE
+         t1.user_id = t2.user_id".$where;
+    $row = $GLOBALS['db']->getAll($sql);
+    return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
 }
 
 function parter_emp_list($id){
