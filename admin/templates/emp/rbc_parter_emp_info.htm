@@ -1,0 +1,97 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+{include file="pageheader.htm"}
+{insert_scripts files="../js/utils.js,selectzone.js,colorselector.js"}
+<!-- start goods form -->
+<style>
+  .head_div span{
+    font-size: 18px;
+    margin-right: 20px;
+  }
+</style>
+<div class="tab-div">
+  <!-- tab body -->
+  <div id="tabbody-div">
+    <form enctype="multipart/form-data" action="parterAdmin.php?act=add_update_emp" method="post" name="theForm" >
+      <table align="center">
+        <tr hidden>
+          <td>id:</td>
+          <td><input  name='id' value='{$rbc_parter_emp.id}'/></td>
+        </tr>
+        <!--<tr >-->
+        <!--<td>员工编码:</td>-->
+        <!--<td><input readonly  name='staffID' value='{$rbc_parter_emp.staffID}'/></td>-->
+        <!--</tr>-->
+        <tr >
+        <td>员工登陆帐号:</td>
+        <td><input {if $act eq 'edit'}readonly{/if} id='loginID' name='loginID' value='{$rbc_parter_emp.loginID}' onblur="ajaxValidateAccount();"/>&nbsp;<span id="accountTip" style="color:red;display: none">*账号已存在</span></td>
+      </tr>
+      <tr >
+        <td>员工登录密码:</td>
+        <td><input  name='password' value='{$rbc_parter_emp.password}' /></td>
+      </tr>
+        <!--<tr >-->
+          <!--<td>确认登录密码:</td>-->
+          <!--<td><input   value='{$rbc_parter_emp.password}'/></td>-->
+        <!--</tr>-->
+        <tr >
+          <td>员工姓名:</td>
+          <td><input {if $act eq 'edit'}readonly{/if} name='staffName' value='{$rbc_parter_emp.staffName}'/></td>
+        </tr>
+        <tr>
+          <td>性别:</td>
+          <td>
+            {if $act eq 'add'}
+            <select name="sex">
+              <option value="">请选择</option>
+              <option value="男">男</option>
+              <option value="女">女</option>
+            </select>
+            {/if}
+            {if $act == 'edit'}
+            <input readonly  name='sex' value='{$rbc_parter_emp.sex}'/>
+            {/if}
+          </td>
+        </tr>
+      <tr >
+        <td>员工手机号:</td>
+        <td><input  name='phone' value='{$rbc_parter_emp.phone}'/></td>
+      </tr>
+      <tr >
+        <td>员工分佣比例:</td>
+        <td><input {if $act eq 'edit'}readonly{/if} name='commission' value='{$rbc_parter_emp.commission}'/>%</td>
+      </tr>
+      </table>
+      <input hidden name="parter_id" value='{$parter_id}'/>
+      <div class="button-div">
+        <input type="button" class="button" value="确定" onclick="validate()"/>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- end goods form -->
+{insert_scripts files="validator.js,tab.js,showbox.js"}
+<script>
+  function validate(){
+    if(document.getElementById('accountTip').style.display =='inline'){
+      alert('账号已存在，请设置其他登录名');
+      return ;
+    }
+    var form  = document.forms['theForm'];
+    form.submit();
+  }
+
+  function ajaxValidateAccount(){
+    function callback(result){
+      if(result.error > 0){
+        document.getElementById('accountTip').style.display ='inline';
+      }else{
+        document.getElementById('accountTip').style.display ='none';
+      }
+    }
+    Ajax.call('parterAdmin.php?act=validateAccount','login_id='+document.getElementById('loginID').value, callback, 'GET', 'JSON');
+  }
+
+</script>
+
+{include file="pagefooter.htm"}
