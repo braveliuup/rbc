@@ -357,6 +357,28 @@ function parter_emp_finance_list(){
     return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
 }
 
+function get_nochecked_daifu_coutn(){
+    $sql = "SELECT count(1) FROM rbc_pay_for_another where parter_id = {$_SESSION['admin_id']} and pay_status = '未审核代付'";
+    return $GLOBALS['db']->getOne($sql);
+}
+function help_pay_user_list(){
+    $where = " where parter_id = {$_SESSION['admin_id']}";
+    $filter['daifu_status']  = empty($_REQUEST['daifu_status']) ? '' : trim($_REQUEST['daifu_status']);
+    if (!empty($filter['daifu_status']))
+    {
+        $where .= " and (pay_status = '" . mysql_like_quote($filter['daifu_status']) . "') ";
+    }
+
+    /* 记录总数 */
+    $sql = "SELECT count(1) FROM rbc_pay_for_another  ".$where;
+    $filter['record_count'] = $GLOBALS['db']->getOne($sql);
+    /* 分页大小 */
+    $filter = page_and_size($filter);
+    $sql = "SELECT * FROM rbc_pay_for_another".$where. " LIMIT " . $filter['start'] . ",$filter[page_size]";
+    $row = $GLOBALS['db']->getAll($sql);
+    return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
+}
+
 function parter_finance_list(){
     $where = " where parter_id = {$_SESSION['admin_id']}";
 

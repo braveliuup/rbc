@@ -25,6 +25,7 @@ require(dirname(__FILE__) . '/includes/lib_parter.php');
 if ($_REQUEST['act'] == 'logout')
 {
     $sess->destroy_session();
+    $_SESSION = array();
     exit('<script>top.location.href="templates/parter/parter_login.htm"</script>');
  }
 if ($_REQUEST['act'] == '' || $_REQUEST['act'] == 'login')
@@ -175,6 +176,29 @@ elseif($_REQUEST['act'] == 'query_emp_finance_list'){
     $smarty->assign('page_count',   $list['page_count']);
     $smarty->assign('full_page', 0);
     make_json_result($smarty->fetch('parter\rbc_emp_finance_list.htm'),'',
+        array('filter' => $list['filter'], 'page_count' => $list['page_count']));
+}
+
+elseif($_REQUEST['act'] == 'enterprise_help_pay') {
+    $smarty->assign('ur_here', '一键代付管理');
+    $list = help_pay_user_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+
+    $smarty->assign('no_checked_count',   get_nochecked_daifu_coutn());
+    $smarty->assign('full_page', 1);
+    $smarty->display('parter\enterprise_help_pay.htm');
+}
+elseif($_REQUEST['act'] == 'query_enterprise_help_pay') {
+    $list = help_pay_user_list();
+    $smarty->assign('list',   $list['list']);
+    $smarty->assign('filter', $list['filter']);
+    $smarty->assign('record_count', $list['record_count']);
+    $smarty->assign('page_count',   $list['page_count']);
+    $smarty->assign('full_page', 0);
+    make_json_result($smarty->fetch('parter\enterprise_help_pay.htm'),'',
         array('filter' => $list['filter'], 'page_count' => $list['page_count']));
 }
 
