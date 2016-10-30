@@ -152,7 +152,6 @@ function get_supplier_order_goods($supplier_id){
     $row = $GLOBALS['db']->getAll($sql);
 
     return array('list' => $row, 'filter' => $filter, 'page_count' => $filter['page_count'], 'record_count' => $filter['record_count']);
-    return $result;
 }
 
 function get_supplier_order_list($supplier_id){

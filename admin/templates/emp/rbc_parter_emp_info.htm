@@ -12,7 +12,6 @@
 <div class="tab-div">
   <!-- tab body -->
   <div id="tabbody-div">
-    <form enctype="multipart/form-data" action="parterAdmin.php?act=add_update_emp" method="post" name="theForm" >
       <table align="center">
         <tr hidden>
           <td>id:</td>
@@ -20,58 +19,67 @@
         </tr>
         <!--<tr >-->
         <!--<td>员工编码:</td>-->
-        <!--<td><input readonly  name='staffID' value='{$rbc_parter_emp.staffID}'/></td>-->
+        <!--<td><input disabled  name='staffID' value='{$rbc_parter_emp.staffID}'/></td>-->
         <!--</tr>-->
         <tr >
         <td>员工登陆帐号:</td>
-        <td><input {if $act eq 'edit'}readonly{/if} id='loginID' name='loginID' value='{$rbc_parter_emp.loginID}' onblur="ajaxValidateAccount();"/>&nbsp;<span id="accountTip" style="color:red;display: none">*账号已存在</span></td>
+        <td><input disabled id='loginID' name='loginID' value='{$rbc_parter_emp.loginID}' onblur="ajaxValidateAccount();"/>&nbsp;<span id="accountTip" style="color:red;display: none">*账号已存在</span></td>
       </tr>
-      <tr >
-        <td>员工登录密码:</td>
-        <td><input  name='password' value='{$rbc_parter_emp.password}' /></td>
-      </tr>
+      <!--<tr >-->
+        <!--<td>员工登录密码:</td>-->
+        <!--<td><input  name='password' value='{$rbc_parter_emp.password}' /></td>-->
+      <!--</tr>-->
         <!--<tr >-->
           <!--<td>确认登录密码:</td>-->
           <!--<td><input   value='{$rbc_parter_emp.password}'/></td>-->
         <!--</tr>-->
         <tr >
           <td>员工姓名:</td>
-          <td><input {if $act eq 'edit'}readonly{/if} name='staffName' value='{$rbc_parter_emp.staffName}'/></td>
+          <td><input disabled name='staffName' value='{$rbc_parter_emp.staffName}'/></td>
         </tr>
         <tr>
           <td>性别:</td>
           <td>
-            {if $act eq 'add'}
-            <select name="sex">
-              <option value="">请选择</option>
-              <option value="男">男</option>
-              <option value="女">女</option>
-            </select>
-            {/if}
-            {if $act == 'edit'}
-            <input readonly  name='sex' value='{$rbc_parter_emp.sex}'/>
-            {/if}
+            <input disabled  name='sex' value='{$rbc_parter_emp.sex}'/>
           </td>
         </tr>
       <tr >
         <td>员工手机号:</td>
-        <td><input  name='phone' value='{$rbc_parter_emp.phone}'/></td>
+        <td><input id="phone"  name='phone' value='{$rbc_parter_emp.phone}'/> <input onclick="update_emp({$rbc_parter_emp.id})" type="button" class="button" value="修改"/> </td>
       </tr>
       <tr >
         <td>员工分佣比例:</td>
-        <td><input {if $act eq 'edit'}readonly{/if} name='commission' value='{$rbc_parter_emp.commission}'/>%</td>
+        <td><input disabled name='commission' value='{$rbc_parter_emp.commission}'/>%</td>
       </tr>
+        <tr>
+          <td><br></td>
+        </tr>
+        <tr>
+          <td colspan="2"><span style="color:red;">如果您的信息有误或已经更新，请联系经合作商管理人员进行更正！</span></td>
+        </tr>
       </table>
-      <input hidden name="parter_id" value='{$parter_id}'/>
-      <div class="button-div">
-        <input type="button" class="button" value="确定" onclick="validate()"/>
-      </div>
-    </form>
+      <!--<input hidden name="parter_id" value='{$parter_id}'/>-->
+      <!--<div class="button-div">-->
+        <!--<input type="button" class="button" value="确定" onclick="validate()"/>-->
+      <!--</div>-->
+
   </div>
 </div>
 <!-- end goods form -->
 {insert_scripts files="validator.js,tab.js,showbox.js"}
 <script>
+
+  function update_emp(id){
+      var callback = function(result){
+        if(result.error == 0){
+          alert('修改成功');
+        }
+      }
+      var phone = Utils.$('phone').value;
+    console.log(phone)
+      Ajax.call('parterEmpAdmin.php?act=udpate_emp', 'id='+id+"&phone="+phone, callback,'POST','JSON');
+  }
+
   function validate(){
     if(document.getElementById('accountTip').style.display =='inline'){
       alert('账号已存在，请设置其他登录名');
@@ -89,7 +97,7 @@
         document.getElementById('accountTip').style.display ='none';
       }
     }
-    Ajax.call('parterAdmin.php?act=validateAccount','login_id='+document.getElementById('loginID').value, callback, 'GET', 'JSON');
+    Ajax.call('parterEmpAdmin.php?act=validateAccount','login_id='+document.getElementById('loginID').value, callback, 'GET', 'JSON');
   }
 
 </script>

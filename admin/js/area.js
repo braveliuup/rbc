@@ -33,12 +33,13 @@ function createAreaComponent(name, initCallback, genInput){
             rcode =  region.options[region.selectedIndex].value;
             if(pcode != ''){
                 input.value = input.value + pcode ;
-            }else if(ccode != ''){
-                input.value = input.value+'-'+  ccode ;
-            }else if(rcode != ''){
-                input.value = input.value +  '-'+rcode ;
+                if(ccode != ''){
+                    input.value = input.value+'-'+  ccode ;
+                    if(rcode != ''){
+                        input.value = input.value +  '-'+rcode ;
+                    }
+                }
             }
-
         }
     }
     if(!genInput){
