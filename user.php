@@ -679,42 +679,26 @@ elseif ($action == 'profile')
 elseif($action == 'user_pay_for_another'){
     include_once(ROOT_PATH . 'includes/lib_transaction.php');
 
-    $user_info = get_profile($user_id);
+    $page = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 1;
 
-    /* 取出注册扩展字段 */
-    $sql = 'SELECT * FROM ' . $ecs->table('reg_fields') . ' WHERE type < 2 AND display = 1 ORDER BY dis_order, id';
-    $extend_info_list = $db->getAll($sql);
+    $record_count = $db->getOne("SELECT COUNT(*) FROM " .$ecs->table('order_goods'). " WHERE user_id = '$user_id'");
 
-    $sql = 'SELECT reg_field_id, content ' .
-        'FROM ' . $ecs->table('reg_extend_info') .
-        " WHERE user_id = $user_id";
-    $extend_info_arr = $db->getAll($sql);
+    $pager  = get_pager('user.php', array('act' => $action), $record_count, $page);
 
-    $temp_arr = array();
-    foreach ($extend_info_arr AS $val)
-    {
-        $temp_arr[$val['reg_field_id']] = $val['content'];
-    }
+    $orders = get_user_order_goods($user_id, $pager['size'], $pager['start']);
+//    //wang 商家入驻 获得订单商品
+//    foreach($orders as $key=>$val)
+//    {
+//        //获得店铺信息
+//        $orders[$key]['store']=$db->getRow("select id,shop_name from ".$ecs->table('seller_shopinfo')." where seller_id='".$val['seller_id']."'");
+//        //获取订单商品信息
+//        $sql="select g.goods_thumb,og.goods_id,og.goods_name,og.goods_price,og.goods_number from ".$ecs->table('order_goods')." as og left join ".$ecs->table('goods')." as g on g.goods_id=og.goods_id where og.order_id='".$val[order_id]."'";
+//        $orders[$key]['goods_list']=$db->getAll($sql);
+//
+//    }
 
-    foreach ($extend_info_list AS $key => $val)
-    {
-        switch ($val['id'])
-        {
-            case 1:     $extend_info_list[$key]['content'] = $user_info['msn']; break;
-            case 2:     $extend_info_list[$key]['content'] = $user_info['qq']; break;
-            case 3:     $extend_info_list[$key]['content'] = $user_info['office_phone']; break;
-            case 4:     $extend_info_list[$key]['content'] = $user_info['home_phone']; break;
-            case 5:     $extend_info_list[$key]['content'] = $user_info['mobile_phone']; break;
-            default:    $extend_info_list[$key]['content'] = empty($temp_arr[$val['id']]) ? '' : $temp_arr[$val['id']] ;
-        }
-    }
-
-    $smarty->assign('extend_info_list', $extend_info_list);
-
-    /* 密码提示问题 */
-    $smarty->assign('passwd_questions', $_LANG['passwd_questions']);
-
-    $smarty->assign('profile', $user_info);
+    $smarty->assign('pager',  $pager);
+    $smarty->assign('orders', $orders);
     $smarty->display('user_transaction.dwt');
 }
 /* 修改个人资料的处理 */
@@ -1046,7 +1030,7 @@ elseif ($action == 'order_list')
 		//获取订单商品信息
 		$sql="select g.goods_thumb,og.goods_id,og.goods_name,og.goods_price,og.goods_number from ".$ecs->table('order_goods')." as og left join ".$ecs->table('goods')." as g on g.goods_id=og.goods_id where og.order_id='".$val[order_id]."'";
 		$orders[$key]['goods_list']=$db->getAll($sql);
-		
+
 	}
     $merge  = get_user_merge($user_id);
 
